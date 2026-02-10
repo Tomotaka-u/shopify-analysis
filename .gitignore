@@ -1,0 +1,16 @@
+# Environment variables (secrets)
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+venv/
+.venv/
+
+# Output
+output/
+
+# macOS
+.DS_Store
