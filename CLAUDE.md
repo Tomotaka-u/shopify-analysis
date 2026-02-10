@@ -2,7 +2,7 @@
 
 ## プロジェクト概要
 Shopifyでデジタル英語教材を販売するストアのマーケティングデータ分析プロジェクト。
-shopify_client.py を使ってShopify APIからデータを取得し、分析・可視化を行う。
+shopify_client.py と ga4_client.py を使ってShopify API・GA4 APIからデータを取得し、分析・可視化を行う。
 
 ## ビジネスコンテキスト
 - デジタル英語教材をShopifyで販売（1年以上運営）
@@ -17,6 +17,15 @@ shopify_client.py を使ってShopify APIからデータを取得し、分析・
   - `get_customers()`: 顧客データ取得
   - `get_products()`: 商品データ取得
   - `shopify_graphql(query)`: カスタムGraphQLクエリ
+- `ga4_client.py`: GA4 Data APIクライアント（サービスアカウント認証）
+  - `run_report(dimensions, metrics, start_date, end_date)`: 汎用レポート実行（DataFrameで返却）
+  - `get_traffic_overview(start_date, end_date)`: チャネル別セッション・ユーザー数
+  - `get_daily_traffic(start_date, end_date)`: 日別トラフィック推移（セッション・売上等）
+  - `get_source_medium(start_date, end_date)`: 参照元/メディア別トラフィック
+  - `get_landing_pages(start_date, end_date)`: ランディングページ別パフォーマンス
+  - `get_device_breakdown(start_date, end_date)`: デバイス別トラフィック
+  - `get_geo_data(start_date, end_date)`: 地域（国・都市）別トラフィック
+  - `get_page_views(start_date, end_date)`: ページ別PV・滞在時間
 - pandas, matplotlib: データ分析・可視化
 
 ## 分析時の行動原則
