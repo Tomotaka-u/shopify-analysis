@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ title }} — 比較分析レポート</title>
+<style>
+  :root {
+    --font: -apple-system, BlinkMacSystemFont, 'Inter', 'Helvetica Neue', sans-serif;
+    --bg: #f6f7fb;
+    --card: #ffffff;
+    --text: #1a1d2e;
+    --text-secondary: #6b7085;
+    --text-muted: #9ca0b3;
+    --coral: #ff7a6e;
+    --coral-light: #fff0ee;
+    --coral-mid: #ffe0dc;
+    --blue: #5b8def;
+    --blue-light: #eef3ff;
+    --blue-mid: #d6e4ff;
+    --green: #4ecb8d;
+    --green-light: #eafaf2;
+    --purple: #9b7bf7;
+    --purple-light: #f3efff;
+    --amber: #f5a623;
+    --amber-light: #fff8eb;
+    --teal: #36b5a0;
+    --teal-light: #e8f8f5;
+    --rose: #f472b6;
+    --rose-light: #fdf2f8;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.04);
+    --radius: 16px;
+    --radius-sm: 10px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .dashboard { display: flex; min-height: 100vh; }
+
+  /* Sidebar */
+  .sidebar {
+    width: 260px; background: var(--card);
+    border-right: 1px solid #ecedf2;
+    padding: 32px 20px; position: fixed;
+    top: 0; left: 0; bottom: 0;
+    display: flex; flex-direction: column;
+    z-index: 10; overflow-y: auto;
+  }
+  .sidebar-logo {
+    font-size: 13px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--text-muted); margin-bottom: 8px;
+  }
+  .sidebar-title {
+    font-size: 20px; font-weight: 800;
+    color: var(--text); line-height: 1.3; margin-bottom: 32px;
+  }
+  .sidebar-nav { list-style: none; }
+  .sidebar-nav li { margin-bottom: 4px; }
+  .sidebar-nav a {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px; border-radius: var(--radius-sm);
+    text-decoration: none; color: var(--text-secondary);
+    font-size: 14px; font-weight: 500; transition: all 0.2s;
+  }
+  .sidebar-nav a:hover { background: var(--bg); color: var(--text); }
+  .sidebar-nav a.active { background: var(--blue-light); color: var(--blue); font-weight: 600; }
+  .sidebar-nav .nav-icon {
+    width: 28px; height: 28px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; flex-shrink: 0;
+  }
+  .sidebar-meta {
+    margin-top: auto; padding-top: 20px;
+    border-top: 1px solid #ecedf2;
+    font-size: 12px; color: var(--text-muted); line-height: 1.8;
+  }
+
+  /* Main */
+  .main {
+    margin-left: 260px; flex: 1;
+    padding: 40px 48px 80px; max-width: 1200px;
+  }
+
+  /* Header */
+  .page-header { margin-bottom: 36px; }
+  .page-header h1 {
+    font-size: 28px; font-weight: 800;
+    color: var(--text); margin-bottom: 6px; letter-spacing: -0.02em;
+  }
+  .page-header p { font-size: 14px; color: var(--text-secondary); }
+  .period-badges { display: flex; gap: 12px; margin-top: 16px; }
+  .period-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 16px; border-radius: 100px;
+    font-size: 13px; font-weight: 600;
+  }
+  .period-badge.bf { background: var(--coral-light); color: var(--coral); }
+  .period-badge.ny { background: var(--blue-light); color: var(--blue); }
+  .period-badge .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+
+  /* Section */
+  .section { margin-bottom: 48px; }
+  .section-header {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 20px;
+  }
+  .section-icon {
+    width: 36px; height: 36px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; flex-shrink: 0;
+  }
+  .section-header h2 {
+    font-size: 18px; font-weight: 700; color: var(--text); letter-spacing: -0.01em;
+  }
+  .section-header .section-sub {
+    font-size: 13px; color: var(--text-muted); font-weight: 400;
+  }
+
+  /* Cards */
+  .card {
+    background: var(--card); border-radius: var(--radius);
+    padding: 28px 32px; box-shadow: var(--shadow-sm);
+    margin-bottom: 16px; transition: box-shadow 0.2s;
+  }
+  .card:hover { box-shadow: var(--shadow-md); }
+  .card h3 {
+    font-size: 15px; font-weight: 700;
+    margin-bottom: 16px; color: var(--text);
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  /* KPI Grid */
+  .kpi-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 16px; margin-bottom: 20px;
+  }
+  .kpi-card {
+    background: var(--card); border-radius: var(--radius);
+    padding: 24px; box-shadow: var(--shadow-sm);
+    position: relative; overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .kpi-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+  .kpi-card::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 3px;
+  }
+  .kpi-card:nth-child(1)::before { background: linear-gradient(90deg, var(--coral), #ffb3ac); }
+  .kpi-card:nth-child(2)::before { background: linear-gradient(90deg, var(--blue), #93b5ff); }
+  .kpi-card:nth-child(3)::before { background: linear-gradient(90deg, var(--green), #7eddb0); }
+  .kpi-card:nth-child(4)::before { background: linear-gradient(90deg, var(--purple), #bfa4ff); }
+  .kpi-label {
+    font-size: 12px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 12px;
+  }
+  .kpi-values { display: flex; flex-direction: column; gap: 8px; }
+  .kpi-row { display: flex; align-items: baseline; justify-content: space-between; }
+  .kpi-row .sale-label {
+    font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px;
+  }
+  .kpi-row .sale-label.bf { background: var(--coral-light); color: var(--coral); }
+  .kpi-row .sale-label.ny { background: var(--blue-light); color: var(--blue); }
+  .kpi-row .value {
+    font-size: 20px; font-weight: 700; color: var(--text);
+    letter-spacing: -0.02em; font-variant-numeric: tabular-nums;
+  }
+  .kpi-divider { height: 1px; background: #f0f1f5; }
+
+  /* Tables */
+  .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .data-table thead th {
+    text-align: left; padding: 10px 14px;
+    font-weight: 600; font-size: 11px;
+    text-transform: uppercase; letter-spacing: 0.05em;
+    color: var(--text-muted); border-bottom: 2px solid #ecedf2;
+    white-space: nowrap;
+  }
+  .data-table thead th.num { text-align: right; }
+  .data-table tbody td {
+    padding: 10px 14px; border-bottom: 1px solid #f4f5f8;
+    color: var(--text-secondary);
+  }
+  .data-table tbody tr:hover { background: #fafbfd; }
+  .data-table .num {
+    text-align: right; font-variant-numeric: tabular-nums;
+    font-weight: 600; color: var(--text); white-space: nowrap;
+  }
+  .data-table .label-cell { font-weight: 600; color: var(--text); white-space: nowrap; }
+  .table-bf { color: var(--coral) !important; }
+  .table-ny { color: var(--blue) !important; }
+
+  /* Insight */
+  .insight {
+    padding: 14px 18px; border-radius: var(--radius-sm);
+    font-size: 13px; line-height: 1.6; margin-top: 16px;
+    display: flex; gap: 10px; align-items: flex-start;
+  }
+  .insight.coral { background: var(--coral-light); color: #b5453c; }
+  .insight.blue { background: var(--blue-light); color: #3a5fb5; }
+  .insight.green { background: var(--green-light); color: #2d8a5f; }
+  .insight.purple { background: var(--purple-light); color: #6b4fcf; }
+  .insight.amber { background: var(--amber-light); color: #a16d10; }
+  .insight.teal { background: var(--teal-light); color: #257a6a; }
+  .insight.rose { background: var(--rose-light); color: #b14478; }
+  .insight .insight-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+  /* Bar charts */
+  .bar-chart { margin-top: 12px; }
+  .bar-group { margin-bottom: 14px; }
+  .bar-group-label {
+    font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 6px;
+  }
+  .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+  .bar-label { width: 36px; font-size: 11px; font-weight: 600; flex-shrink: 0; }
+  .bar-label.bf { color: var(--coral); }
+  .bar-label.ny { color: var(--blue); }
+  .bar-track {
+    flex: 1; height: 22px; background: #f0f1f5;
+    border-radius: 6px; overflow: hidden; position: relative;
+  }
+  .bar-fill {
+    height: 100%; border-radius: 6px;
+    display: flex; align-items: center; justify-content: flex-end;
+    padding-right: 8px;
+    font-size: 11px; font-weight: 700; color: #fff;
+    min-width: 40px;
+  }
+  .bar-fill.bf { background: linear-gradient(90deg, var(--coral), #ff9f96); }
+  .bar-fill.ny { background: linear-gradient(90deg, var(--blue), #8db3ff); }
+  .bar-value-outside {
+    font-size: 11px; font-weight: 600; color: var(--text-secondary);
+    width: 80px; text-align: right; flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Funnel */
+  .funnel-container { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 12px; }
+  .funnel-col h4 {
+    font-size: 14px; font-weight: 700; margin-bottom: 12px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .funnel-step {
+    position: relative; padding: 14px 16px;
+    margin-bottom: 4px; border-radius: 8px; font-size: 13px;
+  }
+  .funnel-step .funnel-label { font-weight: 600; color: var(--text); }
+  .funnel-step .funnel-nums {
+    display: flex; justify-content: space-between; align-items: baseline; margin-top: 2px;
+  }
+  .funnel-step .funnel-count {
+    font-size: 18px; font-weight: 800;
+    font-variant-numeric: tabular-nums;
+  }
+  .funnel-step .funnel-rate {
+    font-size: 13px; font-weight: 600;
+  }
+  .funnel-arrow {
+    text-align: center; color: var(--text-muted);
+    font-size: 11px; padding: 2px 0;
+  }
+
+  /* Two column */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+  /* Summary points */
+  .summary-card {
+    background: var(--card); border-radius: var(--radius);
+    padding: 28px 32px; box-shadow: var(--shadow-md); margin-bottom: 20px;
+  }
+  .summary-card h3 {
+    font-size: 15px; font-weight: 700;
+    margin-bottom: 16px; color: var(--text);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .summary-points { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+  .summary-points li {
+    display: flex; gap: 12px; align-items: flex-start;
+    font-size: 14px; color: var(--text-secondary); line-height: 1.65;
+  }
+  .summary-points .point-num {
+    width: 24px; height: 24px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; flex-shrink: 0; margin-top: 1px;
+  }
+  .summary-points li:nth-child(1) .point-num { background: var(--coral-light); color: var(--coral); }
+  .summary-points li:nth-child(2) .point-num { background: var(--blue-light); color: var(--blue); }
+  .summary-points li:nth-child(3) .point-num { background: var(--green-light); color: var(--green); }
+  .summary-points li:nth-child(4) .point-num { background: var(--purple-light); color: var(--purple); }
+  .summary-points li:nth-child(5) .point-num { background: var(--amber-light); color: var(--amber); }
+  .summary-points strong { color: var(--text); font-weight: 600; }
+
+  /* Affiliate rank */
+  .rank-list { list-style: none; }
+  .rank-item {
+    display: grid; grid-template-columns: 32px 1fr auto auto;
+    align-items: center; gap: 12px;
+    padding: 10px 0; border-bottom: 1px solid #f4f5f8; font-size: 13px;
+  }
+  .rank-item:last-child { border-bottom: none; }
+  .rank-num {
+    width: 28px; height: 28px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 800; flex-shrink: 0;
+  }
+  .rank-num.r1 { background: #fff8eb; color: var(--amber); }
+  .rank-num.r2 { background: #f0f1f5; color: var(--text-muted); }
+  .rank-num.r3 { background: #fef0e6; color: #d48b4e; }
+  .rank-num.r4 { background: #f7f7f8; color: #bbb; }
+  .rank-name { font-weight: 500; color: var(--text); }
+  .rank-orders {
+    font-weight: 700; color: var(--text);
+    font-variant-numeric: tabular-nums; text-align: right; min-width: 50px;
+  }
+  .rank-sales {
+    font-weight: 600; color: var(--text-secondary);
+    font-variant-numeric: tabular-nums; text-align: right; min-width: 90px;
+  }
+
+  /* Peak comparison */
+  .peak-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .peak-card {
+    background: var(--card); border-radius: var(--radius);
+    padding: 24px; box-shadow: var(--shadow-sm);
+    border-top: 3px solid;
+  }
+  .peak-card.bf { border-color: var(--coral); }
+  .peak-card.ny { border-color: var(--blue); }
+  .peak-card h4 {
+    font-size: 14px; font-weight: 700; margin-bottom: 12px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .peak-stat {
+    display: flex; justify-content: space-between;
+    padding: 6px 0; border-bottom: 1px solid #f4f5f8;
+    font-size: 13px;
+  }
+  .peak-stat:last-child { border-bottom: none; }
+  .peak-stat-label { color: var(--text-secondary); }
+  .peak-stat-value { font-weight: 700; font-variant-numeric: tabular-nums; }
+
+  /* Recommendations */
+  .rec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .rec-card {
+    background: var(--card); border-radius: var(--radius);
+    padding: 22px 24px; box-shadow: var(--shadow-sm);
+    border-top: 3px solid; transition: transform 0.2s;
+  }
+  .rec-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+  .rec-card:nth-child(1) { border-color: var(--coral); }
+  .rec-card:nth-child(2) { border-color: var(--blue); }
+  .rec-card:nth-child(3) { border-color: var(--green); }
+  .rec-card:nth-child(4) { border-color: var(--purple); }
+  .rec-card:nth-child(5) { border-color: var(--amber); }
+  .rec-card .rec-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+  .rec-card .rec-body { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+
+  /* Animations */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .anim { animation: fadeUp 0.5s ease-out both; }
+  .d1{animation-delay:.05s} .d2{animation-delay:.1s} .d3{animation-delay:.15s}
+  .d4{animation-delay:.2s} .d5{animation-delay:.25s}
+
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; padding: 24px; }
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .two-col, .funnel-container, .rec-grid, .peak-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="dashboard">
+
+  {# ── Sidebar ── #}
+  <aside class="sidebar">
+    <div class="sidebar-logo">Analytics</div>
+    <div class="sidebar-title">{{ sidebar_title }}<br>比較レポート</div>
+    <ul class="sidebar-nav">
+      {%- set nav_sections = [
+        ("summary",    "サマリー",        "coral"),
+        ("sales",      "売上・割引",      "blue"),
+        ("cvr",        "CVRファネル",     "purple"),
+        ("traffic",    "トラフィック",    "green"),
+        ("social",     "SNS媒体比較",     "teal"),
+        ("products",   "商品分析",        "amber"),
+        ("affiliates", "アフィリエイター", "rose"),
+        ("peak",       "ピーク日分析",    "coral"),
+        ("time",       "時間帯・曜日",    "blue"),
+        ("insights",   "発見・提言",      "green"),
+      ] %}
+      {% for id, label, color in nav_sections %}
+      <li><a href="#{{ id }}"{% if loop.first %} class="active"{% endif %}><span class="nav-icon" style="background:var(--{{ color }}-light);color:var(--{{ color }});">{{ "%02d"|format(loop.index) }}</span>{{ label }}</a></li>
+      {% endfor %}
+    </ul>
+    <div class="sidebar-meta">
+      作成日: {{ generated_date }}<br>
+      {{ campaign_a.short_name }}: {{ campaign_a.period_label }}<br>
+      {{ campaign_b.short_name }}: {{ campaign_b.period_label }}<br>
+      データ: {{ data_sources }}
+    </div>
+  </aside>
+
+  {# ── Main ── #}
+  <main class="main">
+
+    {# ── Header ── #}
+    <div class="page-header anim">
+      <h1>{{ title }}</h1>
+      <p>Shopify注文データ{% if has_ga4 %} + GA4トラフィックデータ{% endif %}に基づく比較分析</p>
+      <div class="period-badges">
+        <span class="period-badge {{ campaign_a.css_class }}"><span class="dot"></span>{{ campaign_a.name }} - {{ campaign_a.period_label }}</span>
+        <span class="period-badge {{ campaign_b.css_class }}"><span class="dot"></span>{{ campaign_b.name }} - {{ campaign_b.period_label }}</span>
+      </div>
+    </div>
+
+    {# ===== 1. SUMMARY ===== #}
+    <section id="summary" class="section">
+      <div class="section-header anim d1">
+        <div class="section-icon" style="background:var(--coral-light);color:var(--coral);">01</div>
+        <div><h2>エグゼクティブサマリー</h2><span class="section-sub">主要な発見事項</span></div>
+      </div>
+
+      <div class="kpi-grid anim d2">
+        {% for kpi in kpis %}
+        <div class="kpi-card">
+          <div class="kpi-label">{{ kpi.label }}</div>
+          <div class="kpi-values">
+            <div class="kpi-row">
+              <span class="sale-label {{ campaign_a.css_class }}">{{ campaign_a.short_name }}</span>
+              <span class="value">
+                {%- if kpi.fmt == "yen" %}&yen;{{ kpi.value_a|fmt_yen }}
+                {%- elif kpi.fmt == "pct" %}{{ kpi.value_a|fmt_pct }}
+                {%- elif kpi.fmt == "count" %}{{ kpi.value_a|fmt_num }}{{ kpi.suffix|default("") }}
+                {%- else %}{{ kpi.value_a }}{% endif -%}
+              </span>
+            </div>
+            <div class="kpi-divider"></div>
+            <div class="kpi-row">
+              <span class="sale-label {{ campaign_b.css_class }}">{{ campaign_b.short_name }}</span>
+              <span class="value">
+                {%- if kpi.fmt == "yen" %}&yen;{{ kpi.value_b|fmt_yen }}
+                {%- elif kpi.fmt == "pct" %}{{ kpi.value_b|fmt_pct }}
+                {%- elif kpi.fmt == "count" %}{{ kpi.value_b|fmt_num }}{{ kpi.suffix|default("") }}
+                {%- else %}{{ kpi.value_b }}{% endif -%}
+              </span>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      {% if insights.summary %}
+      <div class="summary-card anim d3">
+        <h3>主要ファインディング</h3>
+        <ul class="summary-points">
+          {% for item in insights.summary %}
+          <li><span class="point-num">{{ item.num }}</span><span>{{ item.text }}</span></li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+    </section>
+
+    {# ===== 2. SALES ===== #}
+    <section id="sales" class="section">
+      <div class="section-header anim">
+        <div class="section-icon" style="background:var(--blue-light);color:var(--blue);">02</div>
+        <div><h2>売上・割引比較</h2><span class="section-sub">Shopify注文CSVベース</span></div>
+      </div>
+
+      <div class="card anim d1">
+        <h3>基本売上指標</h3>
+        <table class="data-table">
+          <thead><tr><th>指標</th><th class="num">{{ campaign_a.name }}</th><th class="num">{{ campaign_b.name }}</th><th class="num">{{ campaign_a.short_name }} / {{ campaign_b.short_name }}</th></tr></thead>
+          <tbody>
+            {% for row in sales_table %}
+            <tr>
+              <td class="label-cell">{{ row.label }}</td>
+              {% if row.fmt is defined and row.fmt == "yen" %}
+              <td class="num table-{{ campaign_a.css_class }}">&yen;{{ row.a|fmt_yen }}</td>
+              <td class="num table-{{ campaign_b.css_class }}">&yen;{{ row.b|fmt_yen }}</td>
+              {% elif row.fmt is defined and row.fmt == "count" %}
+              <td class="num table-{{ campaign_a.css_class }}">{{ row.a|fmt_num }}{{ row.suffix|default("") }}</td>
+              <td class="num table-{{ campaign_b.css_class }}">{{ row.b|fmt_num }}{{ row.suffix|default("") }}</td>
+              {% elif row.fmt is defined and row.fmt == "count_1f" %}
+              <td class="num table-{{ campaign_a.css_class }}">{{ "%.1f"|format(row.a) }}{{ row.suffix|default("") }}</td>
+              <td class="num table-{{ campaign_b.css_class }}">{{ "%.1f"|format(row.b) }}{{ row.suffix|default("") }}</td>
+              {% else %}
+              <td class="num">{{ row.a }}</td>
+              <td class="num">{{ row.b }}</td>
+              {% endif %}
+              <td class="num">{{ row.ratio }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card anim d2">
+        <h3>割引分析</h3>
+        <table class="data-table">
+          <thead><tr><th>指標</th><th class="num">{{ campaign_a.name }}</th><th class="num">{{ campaign_b.name }}</th></tr></thead>
+          <tbody>
+            {% for row in discount_table %}
+            <tr>
+              <td class="label-cell">{{ row.label }}</td>
+              {% if row.fmt == "pct" %}
+              <td class="num table-{{ campaign_a.css_class }}">{{ row.a|fmt_pct }}</td>
+              <td class="num table-{{ campaign_b.css_class }}">{{ row.b|fmt_pct }}</td>
+              {% elif row.fmt == "yen" %}
+              <td class="num table-{{ campaign_a.css_class }}">&yen;{{ row.a|fmt_yen }}</td>
+              <td class="num table-{{ campaign_b.css_class }}">&yen;{{ row.b|fmt_yen }}</td>
+              {% elif row.fmt == "custom" %}
+              <td class="num table-{{ campaign_a.css_class }}">{{ row.a_display }}</td>
+              <td class="num table-{{ campaign_b.css_class }}">{{ row.b_display }}</td>
+              {% else %}
+              <td class="num">{{ row.a }}</td>
+              <td class="num">{{ row.b }}</td>
+              {% endif %}
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% if insights.sales_discount %}
+        <div class="insight green">
+          <span class="insight-icon">*</span>
+          <span>{{ insights.sales_discount }}</span>
+        </div>
+        {% endif %}
+      </div>
+    </section>
+
+    {# ===== 3. CVR FUNNEL ===== #}
+    {% if funnel_a and funnel_b %}
+    <section id="cvr" class="section">
+      <div class="section-header anim">
+        <div class="section-icon" style="background:var(--purple-light);color:var(--purple);">03</div>
+        <div><h2>CVR・ファネル比較</h2><span class="section-sub">Shopify CVR Breakdown CSV</span></div>
+      </div>
+
+      <div class="card anim d1">
+        <h3>コンバージョンファネル</h3>
+        <div class="funnel-container">
+          {# Campaign A funnel #}
+          <div class="funnel-col">
+            <h4><span style="color:var(--{{ campaign_a.color_var }});">&#9679;</span> {{ campaign_a.name }}</h4>
+            {% for step in funnel_a.steps %}
+            {% if step.step_rate is not none and loop.index > 1 %}
+            <div class="funnel-arrow">&#8595; {{ step.step_rate|fmt_pct }}</div>
+            {% endif %}
+            <div class="funnel-step" style="background:var(--{{ campaign_a.color_var }}-{% if loop.last %}mid{% else %}light{% endif %});">
+              <div class="funnel-label">{{ step.label }}</div>
+              <div class="funnel-nums">
+                <span class="funnel-count" style="color:var(--{{ campaign_a.color_var }});">{{ step.count|fmt_num }}</span>
+                <span class="funnel-rate" style="color:var(--{{ campaign_a.color_var }});">{{ step.rate_from_top|fmt_pct }}</span>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+          {# Campaign B funnel #}
+          <div class="funnel-col">
+            <h4><span style="color:var(--{{ campaign_b.color_var }});">&#9679;</span> {{ campaign_b.name }}</h4>
+            {% for step in funnel_b.steps %}
+            {% if step.step_rate is not none and loop.index > 1 %}
+            <div class="funnel-arrow">&#8595; {{ step.step_rate|fmt_pct }}</div>
+            {% endif %}
+            <div class="funnel-step" style="background:var(--{{ campaign_b.color_var }}-{% if loop.last %}mid{% else %}light{% endif %});">
+              <div class="funnel-label">{{ step.label }}</div>
+              <div class="funnel-nums">
+                <span class="funnel-count" style="color:var(--{{ campaign_b.color_var }});">{{ step.count|fmt_num }}</span>
+                <span class="funnel-rate" style="color:var(--{{ campaign_b.color_var }});">{{ step.rate_from_top|fmt_pct }}</span>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% if insights.cvr_funnel %}
+        <div class="insight purple" style="margin-top:20px;">
+          <span class="insight-icon">*</span>
+          <span>{{ insights.cvr_funnel }}</span>
+        </div>
+        {% endif %}
+      </div>
+    </section>
+    {% endif %}
+
+    {# ===== 4. TRAFFIC ===== #}
+    {% if has_ga4 %}
+    <section id="traffic" class="section">
+      <div class="section-header anim">
+        <div class="section-icon" style="background:var(--green-light);color:var(--green);">04</div>
+        <div><h2>トラフィック分析</h2><span class="section-sub">GA4 Data API</span></div>
+      </div>
+
+      {% if traffic_table %}
+      <div class="card anim d1">
+        <h3>トラフィック概要</h3>
+        <table class="data-table">
+          <thead><tr><th>指標</th><th class="num">{{ campaign_a.name }}</th><th class="num">{{ campaign_b.name }}</th><th class="num">{{ campaign_a.short_name }} / {{ campaign_b.short_name }}</th></tr></thead>
+          <tbody>
+            {% for row in traffic_table %}
+            <tr>
+              <td class="label-cell">{{ row.label }}</td>
+              {% if row.fmt == "num" %}
+              <td class="num table-{{ campaign_a.css_class }}">{{ row.a|fmt_num }}</td>
+              <td class="num table-{{ campaign_b.css_class }}">{{ row.b|fmt_num }}</td>
+              {% elif row.fmt == "num_int" %}
+              <td class="num table-{{ campaign_a.css_class }}">{{ row.a|int|fmt_num }}</td>
+              <td class="num table-{{ campaign_b.css_class }}">{{ row.b|int|fmt_num }}</td>
+              {% elif row.fmt == "pct" %}
+              <td class="num table-{{ campaign_a.css_class }}">{{ row.a|fmt_pct }}</td>
+              <td class="num table-{{ campaign_b.css_class }}">{{ row.b|fmt_pct }}</td>
+              {% else %}
+              <td class="num">{{ row.a }}</td>
+              <td class="num">{{ row.b }}</td>
+              {% endif %}
+              <td class="num">{{ row.ratio }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% endif %}
+
+      {% if channel_bars %}
+      <div class="card anim d2">
+        <h3>チャネル別セッション</h3>
+        <div class="bar-chart">
+          {% for ch in channel_bars %}
+          <div class="bar-group">
+            <div class="bar-group-label">{{ ch.name }}</div>
+            <div class="bar-row">
+              <span class="bar-label {{ campaign_a.css_class }}">{{ campaign_a.short_name }}</span>
+              <div class="bar-track"><div class="bar-fill {{ campaign_a.css_class }}" style="width:{{ ch.width_a }}%">{{ ch.sessions_a|fmt_num }}</div></div>
+              <span class="bar-value-outside">{{ ch.pct_a|fmt_pct }}</span>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label {{ campaign_b.css_class }}">{{ campaign_b.short_name }}</span>
+              <div class="bar-track"><div class="bar-fill {{ campaign_b.css_class }}" style="width:{{ ch.width_b }}%">{{ ch.sessions_b|fmt_num }}</div></div>
+              <span class="bar-value-outside">{{ ch.pct_b|fmt_pct }}</span>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% if insights.traffic_channel %}
+        <div class="insight green">
+          <span class="insight-icon">*</span>
+          <span>{{ insights.traffic_channel }}</span>
+        </div>
+        {% endif %}
+      </div>
+      {% endif %}
+    </section>
+    {% endif %}
+
+    {# ===== 5. SOCIAL ===== #}
+    {% if social_table %}
+    <section id="social" class="section">
+      <div class="section-header anim">
+        <div class="section-icon" style="background:var(--teal-light);color:var(--teal);">05</div>
+        <div><h2>SNS媒体別 売上・CVR</h2><span class="section-sub">Shopify Social Referrer + GA4</span></div>
+      </div>
+
+      <div class="card anim d1">
+        <h3>Shopify帰属 ソーシャル売上</h3>
+        <table class="data-table">
+          <thead><tr><th>媒体</th><th class="num">{{ campaign_a.short_name }} 売上</th><th class="num">{{ campaign_b.short_name }} 売上</th><th class="num">全期間 累計</th></tr></thead>
+          <tbody>
+            {% for row in social_table %}
+            <tr>
+              <td class="label-cell">{{ row.name }}</td>
+              <td class="num table-{{ campaign_a.css_class }}">&yen;{{ row.sales_a|fmt_yen }}</td>
+              <td class="num table-{{ campaign_b.css_class }}">&yen;{{ row.sales_b|fmt_yen }}</td>
+              <td class="num">&yen;{{ row.sales_all|fmt_yen }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% if insights.social_sales %}
+        <div class="insight teal">
+          <span class="insight-icon">*</span>
+          <span>{{ insights.social_sales }}</span>
+        </div>
+        {% endif %}
+      </div>
+    </section>
+    {% endif %}
+
+    {# ===== 6. PRODUCTS ===== #}
+    {% if product_table %}
+    <section id="products" class="section">
+      <div class="section-header anim">
+        <div class="section-icon" style="background:var(--amber-light);color:var(--amber);">06</div>
+        <div><h2>商品分析</h2><span class="section-sub">Shopify注文CSVベース</span></div>
+      </div>
+
+      <div class="card anim d1">
+        <h3>商品別 販売数・構成比</h3>
+        <table class="data-table">
+          <thead><tr><th>商品</th><th class="num">{{ campaign_a.short_name }} 数量</th><th class="num">{{ campaign_a.short_name }} 構成比</th><th class="num">{{ campaign_b.short_name }} 数量</th><th class="num">{{ campaign_b.short_name }} 構成比</th></tr></thead>
+          <tbody>
+            {% for row in product_table %}
+            <tr>
+              <td class="label-cell">{{ row.name }}</td>
+              <td class="num table-{{ campaign_a.css_class }}">{{ row.qty_a|fmt_num }}</td>
+              <td class="num">{{ row.pct_a|fmt_pct }}</td>
+              <td class="num table-{{ campaign_b.css_class }}">{{ row.qty_b|fmt_num }}</td>
+              <td class="num">{{ row.pct_b|fmt_pct }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% if insights.products %}
+        <div class="insight amber">
+          <span class="insight-icon">*</span>
+          <span>{{ insights.products }}</span>
+        </div>
+        {% endif %}
+      </div>
+    </section>
+    {% endif %}
+
+    {# ===== 7. AFFILIATES ===== #}
+    {% if affiliate_a or affiliate_b %}
+    <section id="affiliates" class="section">
+      <div class="section-header anim">
+        <div class="section-icon" style="background:var(--rose-light);color:var(--rose);">07</div>
+        <div><h2>アフィリエイター分析</h2><span class="section-sub">割引コード別の貢献度</span></div>
+      </div>
+
+      <div class="two-col anim d1">
+        {% for camp, ranking in [(campaign_a, affiliate_a), (campaign_b, affiliate_b)] %}
+        <div class="card">
+          <h3><span style="color:var(--{{ camp.color_var }});">&#9679;</span> {{ camp.name }} TOP{{ ranking|length }}</h3>
+          <ul class="rank-list">
+            {% for item in ranking %}
+            <li class="rank-item">
+              <span class="rank-num r{{ item.rank if item.rank <= 3 else 4 }}">{{ item.rank }}</span>
+              <span class="rank-name">{{ item.name }}</span>
+              <span class="rank-orders">{{ item.orders }}件</span>
+              <span class="rank-sales">&yen;{{ item.sales|fmt_yen }}</span>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endfor %}
+      </div>
+
+      {% if affiliate_comparison %}
+      <div class="card anim d2">
+        <h3>主要コードのセール間変動</h3>
+        <table class="data-table">
+          <thead><tr><th>コード</th><th class="num">{{ campaign_a.short_name }}</th><th class="num">{{ campaign_b.short_name }}</th></tr></thead>
+          <tbody>
+            {% for row in affiliate_comparison %}
+            <tr>
+              <td class="label-cell">{{ row.name }}</td>
+              <td class="num table-{{ campaign_a.css_class }}">{{ row.orders_a }}件</td>
+              <td class="num table-{{ campaign_b.css_class }}">{{ row.orders_b }}件</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% if insights.affiliates %}
+        <div class="insight rose">
+          <span class="insight-icon">*</span>
+          <span>{{ insights.affiliates }}</span>
+        </div>
+        {% endif %}
+      </div>
+      {% endif %}
+    </section>
+    {% endif %}
+
+    {# ===== 8. PEAK DAYS ===== #}
+    {% if peak_a and peak_b %}
+    <section id="peak" class="section">
+      <div class="section-header anim">
+        <div class="section-icon" style="background:var(--coral-light);color:var(--coral);">08</div>
+        <div><h2>ピーク日の比較</h2><span class="section-sub">{{ campaign_a.short_name }} {{ peak_a.date }} vs {{ campaign_b.short_name }} {{ peak_b.date }}</span></div>
+      </div>
+
+      <div class="peak-grid anim d1">
+        {% for camp, peak in [(campaign_a, peak_a), (campaign_b, peak_b)] %}
+        <div class="peak-card {{ camp.css_class }}">
+          <h4><span style="color:var(--{{ camp.color_var }});">&#9679;</span> {{ camp.short_name }} {{ peak.date }}</h4>
+          <div class="peak-stat"><span class="peak-stat-label">注文数</span><span class="peak-stat-value">{{ peak.order_count }}件</span></div>
+          <div class="peak-stat"><span class="peak-stat-label">売上</span><span class="peak-stat-value">&yen;{{ peak.total_sales|fmt_yen }}</span></div>
+        </div>
+        {% endfor %}
+      </div>
+
+      {% if insights.peak_channel %}
+      <div class="card anim d2">
+        <div class="insight coral">
+          <span class="insight-icon">*</span>
+          <span>{{ insights.peak_channel }}</span>
+        </div>
+      </div>
+      {% endif %}
+    </section>
+    {% endif %}
+
+    {# ===== 9. TIME/DAY ===== #}
+    {% if time_table %}
+    <section id="time" class="section">
+      <div class="section-header anim">
+        <div class="section-icon" style="background:var(--blue-light);color:var(--blue);">09</div>
+        <div><h2>時間帯・曜日分析</h2><span class="section-sub">全期間 {{ total_orders_count|fmt_num }}注文ベース</span></div>
+      </div>
+
+      <div class="card anim d1">
+        <h3>時間帯ブロック別 注文構成比</h3>
+        <table class="data-table">
+          <thead><tr><th>時間帯</th><th class="num">全期間</th><th class="num">構成比</th><th class="num">{{ campaign_a.short_name }}</th><th class="num">構成比</th><th class="num">{{ campaign_b.short_name }}</th><th class="num">構成比</th></tr></thead>
+          <tbody>
+            {% for row in time_table %}
+            <tr{% if row.highlight %} style="background:#eef3ff;"{% endif %}>
+              <td class="label-cell"{% if row.highlight %} style="font-weight:800;"{% endif %}>{{ row.label }}</td>
+              <td class="num"{% if row.highlight %} style="font-weight:800;"{% endif %}>{{ row.count_all|fmt_num }}件</td>
+              <td class="num"{% if row.highlight %} style="font-weight:800;"{% endif %}>{{ row.pct_all|fmt_pct }}</td>
+              <td class="num"{% if row.highlight %} style="font-weight:800;"{% endif %}>{{ row.count_a|fmt_num }}件</td>
+              <td class="num"{% if row.highlight %} style="font-weight:800;"{% endif %}>{{ row.pct_a|fmt_pct }}</td>
+              <td class="num"{% if row.highlight %} style="font-weight:800;"{% endif %}>{{ row.count_b|fmt_num }}件</td>
+              <td class="num"{% if row.highlight %} style="font-weight:800;"{% endif %}>{{ row.pct_b|fmt_pct }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% if insights.time_block %}
+        <div class="insight blue">
+          <span class="insight-icon">*</span>
+          <span>{{ insights.time_block }}</span>
+        </div>
+        {% endif %}
+      </div>
+
+      {% if dow_table %}
+      <div class="card anim d2">
+        <h3>曜日別 注文数</h3>
+        <table class="data-table">
+          <thead><tr><th>曜日</th><th class="num">注文数</th><th class="num">構成比</th><th class="num">平均注文額</th></tr></thead>
+          <tbody>
+            {% for row in dow_table %}
+            <tr{% if loop.first %} style="background:#eef3ff;"{% endif %}>
+              <td class="label-cell"{% if loop.first %} style="font-weight:800;"{% endif %}>{{ row.label }}</td>
+              <td class="num"{% if loop.first %} style="font-weight:800;"{% endif %}>{{ row.count|fmt_num }}件</td>
+              <td class="num"{% if loop.first %} style="font-weight:800;"{% endif %}>{{ row.pct|fmt_pct }}</td>
+              <td class="num">&yen;{{ row.avg_order|fmt_yen }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% if insights.day_of_week %}
+        <div class="insight green">
+          <span class="insight-icon">*</span>
+          <span>{{ insights.day_of_week }}</span>
+        </div>
+        {% endif %}
+      </div>
+      {% endif %}
+    </section>
+    {% endif %}
+
+    {# ===== 10. INSIGHTS ===== #}
+    {% if insights.recommendations %}
+    <section id="insights" class="section">
+      <div class="section-header anim">
+        <div class="section-icon" style="background:var(--green-light);color:var(--green);">10</div>
+        <div><h2>発見事項と次回への提言</h2><span class="section-sub">データに基づく推奨アクション</span></div>
+      </div>
+
+      <div class="rec-grid anim d2">
+        {% for rec in insights.recommendations %}
+        <div class="rec-card"{% if rec.full_width|default(false) %} style="grid-column: 1 / -1;"{% endif %}>
+          <div class="rec-title">{{ rec.title }}</div>
+          <div class="rec-body">{{ rec.body }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+  </main>
+</div>
+
+<script>
+  const sections = document.querySelectorAll('.section');
+  const navLinks = document.querySelectorAll('.sidebar-nav a');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(link => link.classList.remove('active'));
+        const id = entry.target.id;
+        const activeLink = document.querySelector('.sidebar-nav a[href="#' + id + '"]');
+        if (activeLink) activeLink.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
