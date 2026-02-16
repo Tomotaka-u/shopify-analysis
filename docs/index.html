@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BF 2025 vs 新春セール 2025 — 比較分析レポート</title>
+<style>
+  :root {
+    --font: -apple-system, BlinkMacSystemFont, 'Inter', 'Helvetica Neue', sans-serif;
+    --bg: #f6f7fb;
+    --card: #ffffff;
+    --text: #1a1d2e;
+    --text-secondary: #6b7085;
+    --text-muted: #9ca0b3;
+    --coral: #ff7a6e;
+    --coral-light: #fff0ee;
+    --coral-mid: #ffe0dc;
+    --blue: #5b8def;
+    --blue-light: #eef3ff;
+    --blue-mid: #d6e4ff;
+    --green: #4ecb8d;
+    --green-light: #eafaf2;
+    --purple: #9b7bf7;
+    --purple-light: #f3efff;
+    --amber: #f5a623;
+    --amber-light: #fff8eb;
+    --teal: #36b5a0;
+    --teal-light: #e8f8f5;
+    --rose: #f472b6;
+    --rose-light: #fdf2f8;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.04);
+    --radius: 16px;
+    --radius-sm: 10px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .dashboard { display: flex; min-height: 100vh; }
+
+  /* Sidebar */
+  .sidebar {
+    width: 260px; background: var(--card);
+    border-right: 1px solid #ecedf2;
+    padding: 32px 20px; position: fixed;
+    top: 0; left: 0; bottom: 0;
+    display: flex; flex-direction: column;
+    z-index: 10; overflow-y: auto;
+  }
+  .sidebar-logo {
+    font-size: 13px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--text-muted); margin-bottom: 8px;
+  }
+  .sidebar-title {
+    font-size: 20px; font-weight: 800;
+    color: var(--text); line-height: 1.3; margin-bottom: 32px;
+  }
+  .sidebar-nav { list-style: none; }
+  .sidebar-nav li { margin-bottom: 4px; }
+  .sidebar-nav a {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px; border-radius: var(--radius-sm);
+    text-decoration: none; color: var(--text-secondary);
+    font-size: 14px; font-weight: 500; transition: all 0.2s;
+  }
+  .sidebar-nav a:hover { background: var(--bg); color: var(--text); }
+  .sidebar-nav a.active { background: var(--blue-light); color: var(--blue); font-weight: 600; }
+  .sidebar-nav .nav-icon {
+    width: 28px; height: 28px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; flex-shrink: 0;
+  }
+  .sidebar-meta {
+    margin-top: auto; padding-top: 20px;
+    border-top: 1px solid #ecedf2;
+    font-size: 12px; color: var(--text-muted); line-height: 1.8;
+  }
+
+  /* Main */
+  .main {
+    margin-left: 260px; flex: 1;
+    padding: 40px 48px 80px; max-width: 1200px;
+  }
+
+  /* Header */
+  .page-header { margin-bottom: 36px; }
+  .page-header h1 {
+    font-size: 28px; font-weight: 800;
+    color: var(--text); margin-bottom: 6px; letter-spacing: -0.02em;
+  }
+  .page-header p { font-size: 14px; color: var(--text-secondary); }
+  .period-badges { display: flex; gap: 12px; margin-top: 16px; }
+  .period-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 16px; border-radius: 100px;
+    font-size: 13px; font-weight: 600;
+  }
+  .period-badge.bf { background: var(--coral-light); color: var(--coral); }
+  .period-badge.ny { background: var(--blue-light); color: var(--blue); }
+  .period-badge .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+
+  /* Section */
+  .section { margin-bottom: 48px; }
+  .section-header {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 20px;
+  }
+  .section-icon {
+    width: 36px; height: 36px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; flex-shrink: 0;
+  }
+  .section-header h2 {
+    font-size: 18px; font-weight: 700; color: var(--text); letter-spacing: -0.01em;
+  }
+  .section-header .section-sub {
+    font-size: 13px; color: var(--text-muted); font-weight: 400;
+  }
+
+  /* Cards */
+  .card {
+    background: var(--card); border-radius: var(--radius);
+    padding: 28px 32px; box-shadow: var(--shadow-sm);
+    margin-bottom: 16px; transition: box-shadow 0.2s;
+  }
+  .card:hover { box-shadow: var(--shadow-md); }
+  .card h3 {
+    font-size: 15px; font-weight: 700;
+    margin-bottom: 16px; color: var(--text);
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  /* KPI Grid */
+  .kpi-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 16px; margin-bottom: 20px;
+  }
+  .kpi-card {
+    background: var(--card); border-radius: var(--radius);
+    padding: 24px; box-shadow: var(--shadow-sm);
+    position: relative; overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .kpi-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+  .kpi-card::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 3px;
+  }
+  .kpi-card:nth-child(1)::before { background: linear-gradient(90deg, var(--coral), #ffb3ac); }
+  .kpi-card:nth-child(2)::before { background: linear-gradient(90deg, var(--blue), #93b5ff); }
+  .kpi-card:nth-child(3)::before { background: linear-gradient(90deg, var(--green), #7eddb0); }
+  .kpi-card:nth-child(4)::before { background: linear-gradient(90deg, var(--purple), #bfa4ff); }
+  .kpi-label {
+    font-size: 12px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 12px;
+  }
+  .kpi-values { display: flex; flex-direction: column; gap: 8px; }
+  .kpi-row { display: flex; align-items: baseline; justify-content: space-between; }
+  .kpi-row .sale-label {
+    font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px;
+  }
+  .kpi-row .sale-label.bf { background: var(--coral-light); color: var(--coral); }
+  .kpi-row .sale-label.ny { background: var(--blue-light); color: var(--blue); }
+  .kpi-row .value {
+    font-size: 20px; font-weight: 700; color: var(--text);
+    letter-spacing: -0.02em; font-variant-numeric: tabular-nums;
+  }
+  .kpi-divider { height: 1px; background: #f0f1f5; }
+
+  /* Tables */
+  .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .data-table thead th {
+    text-align: left; padding: 10px 14px;
+    font-weight: 600; font-size: 11px;
+    text-transform: uppercase; letter-spacing: 0.05em;
+    color: var(--text-muted); border-bottom: 2px solid #ecedf2;
+    white-space: nowrap;
+  }
+  .data-table thead th.num { text-align: right; }
+  .data-table tbody td {
+    padding: 10px 14px; border-bottom: 1px solid #f4f5f8;
+    color: var(--text-secondary);
+  }
+  .data-table tbody tr:hover { background: #fafbfd; }
+  .data-table .num {
+    text-align: right; font-variant-numeric: tabular-nums;
+    font-weight: 600; color: var(--text); white-space: nowrap;
+  }
+  .data-table .label-cell { font-weight: 600; color: var(--text); white-space: nowrap; }
+  .table-bf { color: var(--coral) !important; }
+  .table-ny { color: var(--blue) !important; }
+
+  /* Insight */
+  .insight {
+    padding: 14px 18px; border-radius: var(--radius-sm);
+    font-size: 13px; line-height: 1.6; margin-top: 16px;
+    display: flex; gap: 10px; align-items: flex-start;
+  }
+  .insight.coral { background: var(--coral-light); color: #b5453c; }
+  .insight.blue { background: var(--blue-light); color: #3a5fb5; }
+  .insight.green { background: var(--green-light); color: #2d8a5f; }
+  .insight.purple { background: var(--purple-light); color: #6b4fcf; }
+  .insight.amber { background: var(--amber-light); color: #a16d10; }
+  .insight.teal { background: var(--teal-light); color: #257a6a; }
+  .insight.rose { background: var(--rose-light); color: #b14478; }
+  .insight .insight-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+  /* Bar charts */
+  .bar-chart { margin-top: 12px; }
+  .bar-group { margin-bottom: 14px; }
+  .bar-group-label {
+    font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 6px;
+  }
+  .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+  .bar-label { width: 36px; font-size: 11px; font-weight: 600; flex-shrink: 0; }
+  .bar-label.bf { color: var(--coral); }
+  .bar-label.ny { color: var(--blue); }
+  .bar-track {
+    flex: 1; height: 22px; background: #f0f1f5;
+    border-radius: 6px; overflow: hidden; position: relative;
+  }
+  .bar-fill {
+    height: 100%; border-radius: 6px;
+    display: flex; align-items: center; justify-content: flex-end;
+    padding-right: 8px;
+    font-size: 11px; font-weight: 700; color: #fff;
+    min-width: 40px;
+  }
+  .bar-fill.bf { background: linear-gradient(90deg, var(--coral), #ff9f96); }
+  .bar-fill.ny { background: linear-gradient(90deg, var(--blue), #8db3ff); }
+  .bar-value-outside {
+    font-size: 11px; font-weight: 600; color: var(--text-secondary);
+    width: 80px; text-align: right; flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Funnel */
+  .funnel-container { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 12px; }
+  .funnel-col h4 {
+    font-size: 14px; font-weight: 700; margin-bottom: 12px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .funnel-step {
+    position: relative; padding: 14px 16px;
+    margin-bottom: 4px; border-radius: 8px; font-size: 13px;
+  }
+  .funnel-step .funnel-label { font-weight: 600; color: var(--text); }
+  .funnel-step .funnel-nums {
+    display: flex; justify-content: space-between; align-items: baseline; margin-top: 2px;
+  }
+  .funnel-step .funnel-count {
+    font-size: 18px; font-weight: 800;
+    font-variant-numeric: tabular-nums;
+  }
+  .funnel-step .funnel-rate {
+    font-size: 13px; font-weight: 600;
+  }
+  .funnel-arrow {
+    text-align: center; color: var(--text-muted);
+    font-size: 11px; padding: 2px 0;
+  }
+
+  /* Two column */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+  /* Summary points */
+  .summary-card {
+    background: var(--card); border-radius: var(--radius);
+    padding: 28px 32px; box-shadow: var(--shadow-md); margin-bottom: 20px;
+  }
+  .summary-card h3 {
+    font-size: 15px; font-weight: 700;
+    margin-bottom: 16px; color: var(--text);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .summary-points { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+  .summary-points li {
+    display: flex; gap: 12px; align-items: flex-start;
+    font-size: 14px; color: var(--text-secondary); line-height: 1.65;
+  }
+  .summary-points .point-num {
+    width: 24px; height: 24px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; flex-shrink: 0; margin-top: 1px;
+  }
+  .summary-points li:nth-child(1) .point-num { background: var(--coral-light); color: var(--coral); }
+  .summary-points li:nth-child(2) .point-num { background: var(--blue-light); color: var(--blue); }
+  .summary-points li:nth-child(3) .point-num { background: var(--green-light); color: var(--green); }
+  .summary-points li:nth-child(4) .point-num { background: var(--purple-light); color: var(--purple); }
+  .summary-points li:nth-child(5) .point-num { background: var(--amber-light); color: var(--amber); }
+  .summary-points strong { color: var(--text); font-weight: 600; }
+
+  /* Affiliate rank */
+  .rank-list { list-style: none; }
+  .rank-item {
+    display: grid; grid-template-columns: 32px 1fr auto auto;
+    align-items: center; gap: 12px;
+    padding: 10px 0; border-bottom: 1px solid #f4f5f8; font-size: 13px;
+  }
+  .rank-item:last-child { border-bottom: none; }
+  .rank-num {
+    width: 28px; height: 28px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 800; flex-shrink: 0;
+  }
+  .rank-num.r1 { background: #fff8eb; color: var(--amber); }
+  .rank-num.r2 { background: #f0f1f5; color: var(--text-muted); }
+  .rank-num.r3 { background: #fef0e6; color: #d48b4e; }
+  .rank-num.r4 { background: #f7f7f8; color: #bbb; }
+  .rank-name { font-weight: 500; color: var(--text); }
+  .rank-orders {
+    font-weight: 700; color: var(--text);
+    font-variant-numeric: tabular-nums; text-align: right; min-width: 50px;
+  }
+  .rank-sales {
+    font-weight: 600; color: var(--text-secondary);
+    font-variant-numeric: tabular-nums; text-align: right; min-width: 90px;
+  }
+
+  /* Peak comparison */
+  .peak-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .peak-card {
+    background: var(--card); border-radius: var(--radius);
+    padding: 24px; box-shadow: var(--shadow-sm);
+    border-top: 3px solid;
+  }
+  .peak-card.bf { border-color: var(--coral); }
+  .peak-card.ny { border-color: var(--blue); }
+  .peak-card h4 {
+    font-size: 14px; font-weight: 700; margin-bottom: 12px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .peak-stat {
+    display: flex; justify-content: space-between;
+    padding: 6px 0; border-bottom: 1px solid #f4f5f8;
+    font-size: 13px;
+  }
+  .peak-stat:last-child { border-bottom: none; }
+  .peak-stat-label { color: var(--text-secondary); }
+  .peak-stat-value { font-weight: 700; font-variant-numeric: tabular-nums; }
+
+  /* Recommendations */
+  .rec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .rec-card {
+    background: var(--card); border-radius: var(--radius);
+    padding: 22px 24px; box-shadow: var(--shadow-sm);
+    border-top: 3px solid; transition: transform 0.2s;
+  }
+  .rec-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+  .rec-card:nth-child(1) { border-color: var(--coral); }
+  .rec-card:nth-child(2) { border-color: var(--blue); }
+  .rec-card:nth-child(3) { border-color: var(--green); }
+  .rec-card:nth-child(4) { border-color: var(--purple); }
+  .rec-card:nth-child(5) { border-color: var(--amber); }
+  .rec-card .rec-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+  .rec-card .rec-body { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+
+  /* Animations */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .anim { animation: fadeUp 0.5s ease-out both; }
+  .d1{animation-delay:.05s} .d2{animation-delay:.1s} .d3{animation-delay:.15s}
+  .d4{animation-delay:.2s} .d5{animation-delay:.25s}
+
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; padding: 24px; }
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .two-col, .funnel-container, .rec-grid, .peak-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="dashboard">
+
+  
+  <aside class="sidebar">
+    <div class="sidebar-logo">Analytics</div>
+    <div class="sidebar-title">BF vs 新春<br>比較レポート</div>
+    <ul class="sidebar-nav">
+      
+      <li><a href="#summary" class="active"><span class="nav-icon" style="background:var(--coral-light);color:var(--coral);">01</span>サマリー</a></li>
+      
+      <li><a href="#sales"><span class="nav-icon" style="background:var(--blue-light);color:var(--blue);">02</span>売上・割引</a></li>
+      
+      <li><a href="#cvr"><span class="nav-icon" style="background:var(--purple-light);color:var(--purple);">03</span>CVRファネル</a></li>
+      
+      <li><a href="#traffic"><span class="nav-icon" style="background:var(--green-light);color:var(--green);">04</span>トラフィック</a></li>
+      
+      <li><a href="#social"><span class="nav-icon" style="background:var(--teal-light);color:var(--teal);">05</span>SNS媒体比較</a></li>
+      
+      <li><a href="#products"><span class="nav-icon" style="background:var(--amber-light);color:var(--amber);">06</span>商品分析</a></li>
+      
+      <li><a href="#affiliates"><span class="nav-icon" style="background:var(--rose-light);color:var(--rose);">07</span>アフィリエイター</a></li>
+      
+      <li><a href="#peak"><span class="nav-icon" style="background:var(--coral-light);color:var(--coral);">08</span>ピーク日分析</a></li>
+      
+      <li><a href="#time"><span class="nav-icon" style="background:var(--blue-light);color:var(--blue);">09</span>時間帯・曜日</a></li>
+      
+      <li><a href="#insights"><span class="nav-icon" style="background:var(--green-light);color:var(--green);">10</span>発見・提言</a></li>
+      
+    </ul>
+    <div class="sidebar-meta">
+      作成日: 2026-02-15<br>
+      BF: 11/15 ~ 12/6（22日間）<br>
+      新春: 12/26 ~ 1/6（12日間）<br>
+      データ: Shopify CSV
+    </div>
+  </aside>
+
+  
+  <main class="main">
+
+    
+    <div class="page-header anim">
+      <h1>BF 2025 vs 新春セール 2025</h1>
+      <p>Shopify注文データに基づく比較分析</p>
+      <div class="period-badges">
+        <span class="period-badge bf"><span class="dot"></span>BF 2025 - 11/15 ~ 12/6（22日間）</span>
+        <span class="period-badge ny"><span class="dot"></span>新春 2025 - 12/26 ~ 1/6（12日間）</span>
+      </div>
+    </div>
+
+    
+    <section id="summary" class="section">
+      <div class="section-header anim d1">
+        <div class="section-icon" style="background:var(--coral-light);color:var(--coral);">01</div>
+        <div><h2>エグゼクティブサマリー</h2><span class="section-sub">主要な発見事項</span></div>
+      </div>
+
+      <div class="kpi-grid anim d2">
+        
+        <div class="kpi-card">
+          <div class="kpi-label">総売上</div>
+          <div class="kpi-values">
+            <div class="kpi-row">
+              <span class="sale-label bf">BF</span>
+              <span class="value">&yen;3,532,002</span>
+            </div>
+            <div class="kpi-divider"></div>
+            <div class="kpi-row">
+              <span class="sale-label ny">新春</span>
+              <span class="value">&yen;1,137,109</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="kpi-card">
+          <div class="kpi-label">注文数</div>
+          <div class="kpi-values">
+            <div class="kpi-row">
+              <span class="sale-label bf">BF</span>
+              <span class="value">563件</span>
+            </div>
+            <div class="kpi-divider"></div>
+            <div class="kpi-row">
+              <span class="sale-label ny">新春</span>
+              <span class="value">180件</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="kpi-card">
+          <div class="kpi-label">平均注文額</div>
+          <div class="kpi-values">
+            <div class="kpi-row">
+              <span class="sale-label bf">BF</span>
+              <span class="value">&yen;6,274</span>
+            </div>
+            <div class="kpi-divider"></div>
+            <div class="kpi-row">
+              <span class="sale-label ny">新春</span>
+              <span class="value">&yen;6,317</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="kpi-card">
+          <div class="kpi-label">CVR（Shopify）</div>
+          <div class="kpi-values">
+            <div class="kpi-row">
+              <span class="sale-label bf">BF</span>
+              <span class="value">5.1%</span>
+            </div>
+            <div class="kpi-divider"></div>
+            <div class="kpi-row">
+              <span class="sale-label ny">新春</span>
+              <span class="value">4.8%</span>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+
+      
+      <div class="summary-card anim d3">
+        <h3>主要ファインディング</h3>
+        <ul class="summary-points">
+          
+          <li><span class="point-num">1</span><span><strong>BFの強さの源泉はInstagramのバイラル効果。</strong>Organic Social（主にIG）がBF全体の36.6%を占め、アプリ内ブラウザ経由で2,230セッション流入。新春ではこれが26に激減し、売上差の最大要因となった。</span></li>
+          
+          <li><span class="point-num">2</span><span><strong>CVRの差はわずか0.3pt。差は集客力にある。</strong>BF 5.1% vs 新春 4.8%。ファネル転換効率はほぼ同じで、セッション数の差（10,392 vs 3,725）が売上差に直結。</span></li>
+          
+          <li><span class="point-num">3</span><span><strong>YouTubeのCVRが全チャネル最強（推定15.1%）。</strong>セッション数はIGの1/6だが、Shopify帰属売上ではYouTube &yen;485,752 > Instagram &yen;42,732。動画で商品理解してから来るため購買率が高い。</span></li>
+          
+          <li><span class="point-num">4</span><span><strong>新春はアフィリエイター依存が高い。</strong>Affiliate比率がBF 11.6% → 新春 24.1%。Tina + ni5.chanの2名が最終日1/6の注文の51%を占める。</span></li>
+          
+          <li><span class="point-num">5</span><span><strong>最終日のCVRが突出する。</strong>BF 12/6のCVR 13.0%は通常の3倍。「今日で終了」の緊急性が最大のCVRブースター。</span></li>
+          
+        </ul>
+      </div>
+      
+    </section>
+
+    
+    <section id="sales" class="section">
+      <div class="section-header anim">
+        <div class="section-icon" style="background:var(--blue-light);color:var(--blue);">02</div>
+        <div><h2>売上・割引比較</h2><span class="section-sub">Shopify注文CSVベース</span></div>
+      </div>
+
+      <div class="card anim d1">
+        <h3>基本売上指標</h3>
+        <table class="data-table">
+          <thead><tr><th>指標</th><th class="num">BF 2025</th><th class="num">新春 2025</th><th class="num">BF / 新春</th></tr></thead>
+          <tbody>
+            
+            <tr>
+              <td class="label-cell">期間</td>
+              
+              <td class="num">22日間</td>
+              <td class="num">12日間</td>
+              
+              <td class="num">-</td>
+            </tr>
+            
+            <tr>
+              <td class="label-cell">注文数</td>
+              
+              <td class="num table-bf">563件</td>
+              <td class="num table-ny">180件</td>
+              
+              <td class="num">3.1倍</td>
+            </tr>
+            
+            <tr>
+              <td class="label-cell">売上合計</td>
+              
+              <td class="num table-bf">&yen;3,532,002</td>
+              <td class="num table-ny">&yen;1,137,109</td>
+              
+              <td class="num">3.1倍</td>
+            </tr>
+            
+            <tr>
+              <td class="label-cell">1日あたり注文</td>
+              
+              <td class="num table-bf">25.6件</td>
+              <td class="num table-ny">15.0件</td>
+              
+              <td class="num">1.7倍</td>
+            </tr>
+            
+            <tr>
+              <td class="label-cell">1日あたり売上</td>
+              
+              <td class="num table-bf">&yen;160,546</td>
+              <td class="num table-ny">&yen;94,759</td>
+              
+              <td class="num">1.7倍</td>
+            </tr>
+            
+            <tr>
+              <td class="label-cell">平均注文額</td>
+              
+              <td class="num table-bf">&yen;6,274</td>
+              <td class="num table-ny">&yen;6,317</td>
+              
+              <td class="num">-</td>
+            </tr>
+            
+            <tr>
+              <td class="label-cell">中央値注文額</td>
+              
+              <td class="num table-bf">&yen;7,167</td>
+              <td class="num table-ny">&yen;7,656</td>
+              
+              <td class="num">-</td>
+            </tr>
+            
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card anim d2">
+        <h3>割引分析</h3>
+        <table class="data-table">
+          <thead><tr><th>指標</th><th class="num">BF 2025</th><th class="num">新春 2025</th></tr></thead>
+          <tbody>
+            
+            <tr>
+              <td class="label-cell">割引適用率</td>
+              
+              <td class="num table-bf">77.6%</td>
+              <td class="num table-ny">82.2%</td>
+              
+            </tr>
+            
+            <tr>
+              <td class="label-cell">平均割引額</td>
+              
+              <td class="num table-bf">&yen;1,747</td>
+              <td class="num table-ny">&yen;1,281</td>
+              
+            </tr>
+            
+            <tr>
+              <td class="label-cell">コードなし購入</td>
+              
+              <td class="num table-bf">126件（22.4%）</td>
+              <td class="num table-ny">32件（17.8%）</td>
+              
+            </tr>
+            
+          </tbody>
+        </table>
+        
+        <div class="insight green">
+          <span class="insight-icon">*</span>
+          <span>割引適用率 = 割引コード経由の注文比率。BFはコードなし22.4%が多く、SNSで見て直接購入する層が厚い。新春は82.2%がコード経由で、アフィリエイター依存度が高い。</span>
+        </div>
+        
+      </div>
+    </section>
+
+    
+    
+    <section id="cvr" class="section">
+      <div class="section-header anim">
+        <div class="section-icon" style="background:var(--purple-light);color:var(--purple);">03</div>
+        <div><h2>CVR・ファネル比較</h2><span class="section-sub">Shopify CVR Breakdown CSV</span></div>
+      </div>
+
+      <div class="card anim d1">
+        <h3>コンバージョンファネル</h3>
+        <div class="funnel-container">
+          
+          <div class="funnel-col">
+            <h4><span style="color:var(--coral);">&#9679;</span> BF 2025</h4>
+            
+            
+            <div class="funnel-step" style="background:var(--coral-light);">
+              <div class="funnel-label">セッション</div>
+              <div class="funnel-nums">
+                <span class="funnel-count" style="color:var(--coral);">10,392</span>
+                <span class="funnel-rate" style="color:var(--coral);">100.0%</span>
+              </div>
+            </div>
+            
+            
+            <div class="funnel-arrow">&#8595; 10.9%</div>
+            
+            <div class="funnel-step" style="background:var(--coral-light);">
+              <div class="funnel-label">カート追加</div>
+              <div class="funnel-nums">
+                <span class="funnel-count" style="color:var(--coral);">1,134</span>
+                <span class="funnel-rate" style="color:var(--coral);">10.9%</span>
+              </div>
+            </div>
+            
+            
+            <div class="funnel-arrow">&#8595; 84.4%</div>
+            
+            <div class="funnel-step" style="background:var(--coral-light);">
+              <div class="funnel-label">チェックアウト到達</div>
+              <div class="funnel-nums">
+                <span class="funnel-count" style="color:var(--coral);">957</span>
+                <span class="funnel-rate" style="color:var(--coral);">9.2%</span>
+              </div>
+            </div>
+            
+            
+            <div class="funnel-arrow">&#8595; 55.8%</div>
+            
+            <div class="funnel-step" style="background:var(--coral-mid);">
+              <div class="funnel-label">購入完了</div>
+              <div class="funnel-nums">
+                <span class="funnel-count" style="color:var(--coral);">534</span>
+                <span class="funnel-rate" style="color:var(--coral);">5.1%</span>
+              </div>
+            </div>
+            
+          </div>
+          
+          <div class="funnel-col">
+            <h4><span style="color:var(--blue);">&#9679;</span> 新春 2025</h4>
+            
+            
+            <div class="funnel-step" style="background:var(--blue-light);">
+              <div class="funnel-label">セッション</div>
+              <div class="funnel-nums">
+                <span class="funnel-count" style="color:var(--blue);">3,725</span>
+                <span class="funnel-rate" style="color:var(--blue);">100.0%</span>
+              </div>
+            </div>
+            
+            
+            <div class="funnel-arrow">&#8595; 9.7%</div>
+            
+            <div class="funnel-step" style="background:var(--blue-light);">
+              <div class="funnel-label">カート追加</div>
+              <div class="funnel-nums">
+                <span class="funnel-count" style="color:var(--blue);">362</span>
+                <span class="funnel-rate" style="color:var(--blue);">9.7%</span>
+              </div>
+            </div>
+            
+            
+            <div class="funnel-arrow">&#8595; 84.5%</div>
+            
+            <div class="funnel-step" style="background:var(--blue-light);">
+              <div class="funnel-label">チェックアウト到達</div>
+              <div class="funnel-nums">
+                <span class="funnel-count" style="color:var(--blue);">306</span>
+                <span class="funnel-rate" style="color:var(--blue);">8.2%</span>
+              </div>
+            </div>
+            
+            
+            <div class="funnel-arrow">&#8595; 58.5%</div>
+            
+            <div class="funnel-step" style="background:var(--blue-mid);">
+              <div class="funnel-label">購入完了</div>
+              <div class="funnel-nums">
+                <span class="funnel-count" style="color:var(--blue);">179</span>
+                <span class="funnel-rate" style="color:var(--blue);">4.8%</span>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+        
+        <div class="insight purple" style="margin-top:20px;">
+          <span class="insight-icon">*</span>
+          <span>ファネル形状はほぼ同じ。カート追加→チェックアウト到達の維持率は両方とも約84%。チェックアウト到達→購入完了はBF 55.8%、新春 58.5%で、新春の方がやや「迷わず買う」傾向。カート→購入率もBF 47.1% vs 新春 49.4%で新春が上。</span>
+        </div>
+        
+      </div>
+    </section>
+    
+
+    
+    
+
+    
+    
+    <section id="social" class="section">
+      <div class="section-header anim">
+        <div class="section-icon" style="background:var(--teal-light);color:var(--teal);">05</div>
+        <div><h2>SNS媒体別 売上・CVR</h2><span class="section-sub">Shopify Social Referrer + GA4</span></div>
+      </div>
+
+      <div class="card anim d1">
+        <h3>Shopify帰属 ソーシャル売上</h3>
+        <table class="data-table">
+          <thead><tr><th>媒体</th><th class="num">BF 売上</th><th class="num">新春 売上</th><th class="num">全期間 累計</th></tr></thead>
+          <tbody>
+            
+            <tr>
+              <td class="label-cell">Youtube</td>
+              <td class="num table-bf">&yen;485,752</td>
+              <td class="num table-ny">&yen;81,238</td>
+              <td class="num">&yen;3,054,876</td>
+            </tr>
+            
+            <tr>
+              <td class="label-cell">Instagram</td>
+              <td class="num table-bf">&yen;42,732</td>
+              <td class="num table-ny">&yen;95,374</td>
+              <td class="num">&yen;2,417,709</td>
+            </tr>
+            
+            <tr>
+              <td class="label-cell">Twitter</td>
+              <td class="num table-bf">&yen;6,281</td>
+              <td class="num table-ny">&yen;0</td>
+              <td class="num">&yen;27,969</td>
+            </tr>
+            
+            <tr>
+              <td class="label-cell">合計</td>
+              <td class="num table-bf">&yen;534,765</td>
+              <td class="num table-ny">&yen;176,612</td>
+              <td class="num">&yen;5,521,440</td>
+            </tr>
+            
+          </tbody>
+        </table>
+        
+        <div class="insight teal">
+          <span class="insight-icon">*</span>
+          <span>全期間累計でYouTube（&yen;305万）がInstagram（&yen;242万）を26%上回る。セッション数はIGの方が圧倒的に多いにも関わらず。ただしIG経由のアフィリエイトリンク売上はAffiliate枠に帰属されるため、IGの実際の貢献度は過小評価されている点に注意。</span>
+        </div>
+        
+      </div>
+    </section>
+    
+
+    
+    
+    <section id="products" class="section">
+      <div class="section-header anim">
+        <div class="section-icon" style="background:var(--amber-light);color:var(--amber);">06</div>
+        <div><h2>商品分析</h2><span class="section-sub">Shopify注文CSVベース</span></div>
+      </div>
+
+      <div class="card anim d1">
+        <h3>商品別 販売数・構成比</h3>
+        <table class="data-table">
+          <thead><tr><th>商品</th><th class="num">BF 数量</th><th class="num">BF 構成比</th><th class="num">新春 数量</th><th class="num">新春 構成比</th></tr></thead>
+          <tbody>
+            
+            <tr>
+              <td class="label-cell">import完全版 - PREMIUM COMPLETE EDITION</td>
+              <td class="num table-bf">447</td>
+              <td class="num">78.7%</td>
+              <td class="num table-ny">114</td>
+              <td class="num">61.6%</td>
+            </tr>
+            
+            <tr>
+              <td class="label-cell">【日常会話が止まらない - 400の動詞表現を完全マスター】</td>
+              <td class="num table-bf">56</td>
+              <td class="num">9.9%</td>
+              <td class="num table-ny">36</td>
+              <td class="num">19.5%</td>
+            </tr>
+            
+            <tr>
+              <td class="label-cell">ESSENTIAL VERBS 400</td>
+              <td class="num table-bf">36</td>
+              <td class="num">6.3%</td>
+              <td class="num table-ny">22</td>
+              <td class="num">11.9%</td>
+            </tr>
+            
+            <tr>
+              <td class="label-cell">NativeDose [ネイティブに近づく 究極の200表現]</td>
+              <td class="num table-bf">28</td>
+              <td class="num">4.9%</td>
+              <td class="num table-ny">13</td>
+              <td class="num">7.0%</td>
+            </tr>
+            
+            <tr>
+              <td class="label-cell">[영어를 뇌에 자동 임포트 - 400개의 동사 표현 완벽 마스터]</td>
+              <td class="num table-bf">1</td>
+              <td class="num">0.2%</td>
+              <td class="num table-ny">0</td>
+              <td class="num">0.0%</td>
+            </tr>
+            
+          </tbody>
+        </table>
+        
+        <div class="insight amber">
+          <span class="insight-icon">*</span>
+          <span>BFはimport完全版が78.7%を占める一本勝負。新春では61.6%に低下し、他商品に分散。新春の方が「他の商品も見て選ぶ」行動が多い。</span>
+        </div>
+        
+      </div>
+    </section>
+    
+
+    
+    
+    <section id="affiliates" class="section">
+      <div class="section-header anim">
+        <div class="section-icon" style="background:var(--rose-light);color:var(--rose);">07</div>
+        <div><h2>アフィリエイター分析</h2><span class="section-sub">割引コード別の貢献度</span></div>
+      </div>
+
+      <div class="two-col anim d1">
+        
+        <div class="card">
+          <h3><span style="color:var(--coral);">&#9679;</span> BF 2025 TOP8</h3>
+          <ul class="rank-list">
+            
+            <li class="rank-item">
+              <span class="rank-num r1">1</span>
+              <span class="rank-name">（コードなし）</span>
+              <span class="rank-orders">126件</span>
+              <span class="rank-sales">&yen;960,277</span>
+            </li>
+            
+            <li class="rank-item">
+              <span class="rank-num r2">2</span>
+              <span class="rank-name">SHINO</span>
+              <span class="rank-orders">109件</span>
+              <span class="rank-sales">&yen;688,613</span>
+            </li>
+            
+            <li class="rank-item">
+              <span class="rank-num r3">3</span>
+              <span class="rank-name">boo!</span>
+              <span class="rank-orders">98件</span>
+              <span class="rank-sales">&yen;665,781</span>
+            </li>
+            
+            <li class="rank-item">
+              <span class="rank-num r4">4</span>
+              <span class="rank-name">ibaraki</span>
+              <span class="rank-orders">60件</span>
+              <span class="rank-sales">&yen;364,250</span>
+            </li>
+            
+            <li class="rank-item">
+              <span class="rank-num r4">5</span>
+              <span class="rank-name">kei</span>
+              <span class="rank-orders">56件</span>
+              <span class="rank-sales">&yen;335,288</span>
+            </li>
+            
+            <li class="rank-item">
+              <span class="rank-num r4">6</span>
+              <span class="rank-name">owner4</span>
+              <span class="rank-orders">20件</span>
+              <span class="rank-sales">&yen;0</span>
+            </li>
+            
+            <li class="rank-item">
+              <span class="rank-num r4">7</span>
+              <span class="rank-name">boo-members</span>
+              <span class="rank-orders">19件</span>
+              <span class="rank-sales">&yen;123,544</span>
+            </li>
+            
+            <li class="rank-item">
+              <span class="rank-num r4">8</span>
+              <span class="rank-name">ni5.chan</span>
+              <span class="rank-orders">19件</span>
+              <span class="rank-sales">&yen;119,924</span>
+            </li>
+            
+          </ul>
+        </div>
+        
+        <div class="card">
+          <h3><span style="color:var(--blue);">&#9679;</span> 新春 2025 TOP8</h3>
+          <ul class="rank-list">
+            
+            <li class="rank-item">
+              <span class="rank-num r1">1</span>
+              <span class="rank-name">Tina</span>
+              <span class="rank-orders">35件</span>
+              <span class="rank-sales">&yen;236,683</span>
+            </li>
+            
+            <li class="rank-item">
+              <span class="rank-num r2">2</span>
+              <span class="rank-name">（コードなし）</span>
+              <span class="rank-orders">32件</span>
+              <span class="rank-sales">&yen;209,192</span>
+            </li>
+            
+            <li class="rank-item">
+              <span class="rank-num r3">3</span>
+              <span class="rank-name">SHINO</span>
+              <span class="rank-orders">31件</span>
+              <span class="rank-sales">&yen;208,317</span>
+            </li>
+            
+            <li class="rank-item">
+              <span class="rank-num r4">4</span>
+              <span class="rank-name">ibaraki</span>
+              <span class="rank-orders">26件</span>
+              <span class="rank-sales">&yen;150,166</span>
+            </li>
+            
+            <li class="rank-item">
+              <span class="rank-num r4">5</span>
+              <span class="rank-name">ni5.chan</span>
+              <span class="rank-orders">19件</span>
+              <span class="rank-sales">&yen;100,891</span>
+            </li>
+            
+            <li class="rank-item">
+              <span class="rank-num r4">6</span>
+              <span class="rank-name">kei</span>
+              <span class="rank-orders">15件</span>
+              <span class="rank-sales">&yen;83,490</span>
+            </li>
+            
+            <li class="rank-item">
+              <span class="rank-num r4">7</span>
+              <span class="rank-name">coco</span>
+              <span class="rank-orders">6件</span>
+              <span class="rank-sales">&yen;39,554</span>
+            </li>
+            
+            <li class="rank-item">
+              <span class="rank-num r4">8</span>
+              <span class="rank-name">hiisama</span>
+              <span class="rank-orders">5件</span>
+              <span class="rank-sales">&yen;38,585</span>
+            </li>
+            
+          </ul>
+        </div>
+        
+      </div>
+
+      
+      <div class="card anim d2">
+        <h3>主要コードのセール間変動</h3>
+        <table class="data-table">
+          <thead><tr><th>コード</th><th class="num">BF</th><th class="num">新春</th></tr></thead>
+          <tbody>
+            
+            <tr>
+              <td class="label-cell">SHINO</td>
+              <td class="num table-bf">109件</td>
+              <td class="num table-ny">31件</td>
+            </tr>
+            
+            <tr>
+              <td class="label-cell">boo!</td>
+              <td class="num table-bf">98件</td>
+              <td class="num table-ny">0件</td>
+            </tr>
+            
+            <tr>
+              <td class="label-cell">ibaraki</td>
+              <td class="num table-bf">60件</td>
+              <td class="num table-ny">26件</td>
+            </tr>
+            
+            <tr>
+              <td class="label-cell">kei</td>
+              <td class="num table-bf">56件</td>
+              <td class="num table-ny">15件</td>
+            </tr>
+            
+            <tr>
+              <td class="label-cell">ni5.chan</td>
+              <td class="num table-bf">19件</td>
+              <td class="num table-ny">19件</td>
+            </tr>
+            
+            <tr>
+              <td class="label-cell">Tina</td>
+              <td class="num table-bf">0件</td>
+              <td class="num table-ny">35件</td>
+            </tr>
+            
+            <tr>
+              <td class="label-cell">owner4</td>
+              <td class="num table-bf">20件</td>
+              <td class="num table-ny">0件</td>
+            </tr>
+            
+            <tr>
+              <td class="label-cell">boo-members</td>
+              <td class="num table-bf">19件</td>
+              <td class="num table-ny">0件</td>
+            </tr>
+            
+          </tbody>
+        </table>
+        
+        <div class="insight rose">
+          <span class="insight-icon">*</span>
+          <span>Tinaは2024年7-8月に161件を記録後、休眠。BFは1件のみだったが、新春で35件と復活。12/27から徐々に再開し、最終日1/6に16件を集中投下した意図的な復帰パターン。</span>
+        </div>
+        
+      </div>
+      
+    </section>
+    
+
+    
+    
+    <section id="peak" class="section">
+      <div class="section-header anim">
+        <div class="section-icon" style="background:var(--coral-light);color:var(--coral);">08</div>
+        <div><h2>ピーク日の比較</h2><span class="section-sub">BF 2025-11-28 vs 新春 2026-01-06</span></div>
+      </div>
+
+      <div class="peak-grid anim d1">
+        
+        <div class="peak-card bf">
+          <h4><span style="color:var(--coral);">&#9679;</span> BF 2025-11-28</h4>
+          <div class="peak-stat"><span class="peak-stat-label">注文数</span><span class="peak-stat-value">98件</span></div>
+          <div class="peak-stat"><span class="peak-stat-label">売上</span><span class="peak-stat-value">&yen;663,974</span></div>
+        </div>
+        
+        <div class="peak-card ny">
+          <h4><span style="color:var(--blue);">&#9679;</span> 新春 2026-01-06</h4>
+          <div class="peak-stat"><span class="peak-stat-label">注文数</span><span class="peak-stat-value">67件</span></div>
+          <div class="peak-stat"><span class="peak-stat-label">売上</span><span class="peak-stat-value">&yen;420,713</span></div>
+        </div>
+        
+      </div>
+
+      
+      <div class="card anim d2">
+        <div class="insight coral">
+          <span class="insight-icon">*</span>
+          <span>BFピークはIG 44.1%が主導、新春ピークはAffiliate 44.8%が主導。構成比がほぼ鏡像。BFは「SNSでバズって自発的に買いに来る」、新春は「アフィリエイターの告知リンクを踏んで来る」と構造が全く異なる。</span>
+        </div>
+      </div>
+      
+    </section>
+    
+
+    
+    
+    <section id="time" class="section">
+      <div class="section-header anim">
+        <div class="section-icon" style="background:var(--blue-light);color:var(--blue);">09</div>
+        <div><h2>時間帯・曜日分析</h2><span class="section-sub">全期間 4,825注文ベース</span></div>
+      </div>
+
+      <div class="card anim d1">
+        <h3>時間帯ブロック別 注文構成比</h3>
+        <table class="data-table">
+          <thead><tr><th>時間帯</th><th class="num">全期間</th><th class="num">構成比</th><th class="num">BF</th><th class="num">構成比</th><th class="num">新春</th><th class="num">構成比</th></tr></thead>
+          <tbody>
+            
+            <tr>
+              <td class="label-cell">深夜（0-5時）</td>
+              <td class="num">656件</td>
+              <td class="num">13.6%</td>
+              <td class="num">65件</td>
+              <td class="num">11.5%</td>
+              <td class="num">15件</td>
+              <td class="num">8.3%</td>
+            </tr>
+            
+            <tr>
+              <td class="label-cell">午前（6-11時）</td>
+              <td class="num">1,096件</td>
+              <td class="num">22.7%</td>
+              <td class="num">126件</td>
+              <td class="num">22.4%</td>
+              <td class="num">32件</td>
+              <td class="num">17.8%</td>
+            </tr>
+            
+            <tr>
+              <td class="label-cell">午後（12-17時）</td>
+              <td class="num">1,263件</td>
+              <td class="num">26.2%</td>
+              <td class="num">131件</td>
+              <td class="num">23.3%</td>
+              <td class="num">42件</td>
+              <td class="num">23.3%</td>
+            </tr>
+            
+            <tr style="background:#eef3ff;">
+              <td class="label-cell" style="font-weight:800;">夜（18-23時）</td>
+              <td class="num" style="font-weight:800;">1,810件</td>
+              <td class="num" style="font-weight:800;">37.5%</td>
+              <td class="num" style="font-weight:800;">241件</td>
+              <td class="num" style="font-weight:800;">42.8%</td>
+              <td class="num" style="font-weight:800;">91件</td>
+              <td class="num" style="font-weight:800;">50.6%</td>
+            </tr>
+            
+          </tbody>
+        </table>
+        
+        <div class="insight blue">
+          <span class="insight-icon">*</span>
+          <span>全注文の37.5%が18-23時に集中。セール時はさらに夜偏重（BF 42.8%、新春 50.6%）。ゴールデンタイムは21-23時の3時間で全注文の22.4%（1,079件）。</span>
+        </div>
+        
+      </div>
+
+      
+      <div class="card anim d2">
+        <h3>曜日別 注文数</h3>
+        <table class="data-table">
+          <thead><tr><th>曜日</th><th class="num">注文数</th><th class="num">構成比</th><th class="num">平均注文額</th></tr></thead>
+          <tbody>
+            
+            <tr style="background:#eef3ff;">
+              <td class="label-cell" style="font-weight:800;">日曜</td>
+              <td class="num" style="font-weight:800;">907件</td>
+              <td class="num" style="font-weight:800;">18.8%</td>
+              <td class="num">&yen;3,945</td>
+            </tr>
+            
+            <tr>
+              <td class="label-cell">月曜</td>
+              <td class="num">745件</td>
+              <td class="num">15.4%</td>
+              <td class="num">&yen;3,991</td>
+            </tr>
+            
+            <tr>
+              <td class="label-cell">土曜</td>
+              <td class="num">732件</td>
+              <td class="num">15.2%</td>
+              <td class="num">&yen;4,417</td>
+            </tr>
+            
+            <tr>
+              <td class="label-cell">火曜</td>
+              <td class="num">642件</td>
+              <td class="num">13.3%</td>
+              <td class="num">&yen;4,178</td>
+            </tr>
+            
+            <tr>
+              <td class="label-cell">金曜</td>
+              <td class="num">630件</td>
+              <td class="num">13.1%</td>
+              <td class="num">&yen;4,300</td>
+            </tr>
+            
+            <tr>
+              <td class="label-cell">木曜</td>
+              <td class="num">585件</td>
+              <td class="num">12.1%</td>
+              <td class="num">&yen;4,008</td>
+            </tr>
+            
+            <tr>
+              <td class="label-cell">水曜</td>
+              <td class="num">584件</td>
+              <td class="num">12.1%</td>
+              <td class="num">&yen;4,039</td>
+            </tr>
+            
+          </tbody>
+        </table>
+        
+        <div class="insight green">
+          <span class="insight-icon">*</span>
+          <span>日曜が最強（18.8%）、木曜が最弱（12.1%）。平均注文額は時間帯・曜日による差がほぼなく（&yen;3,900-4,400）、件数の多さだけが変動要因。SNS投稿やセール告知の最適タイミングは「日曜 or 土曜の20-21時」。</span>
+        </div>
+        
+      </div>
+      
+    </section>
+    
+
+    
+    
+    <section id="insights" class="section">
+      <div class="section-header anim">
+        <div class="section-icon" style="background:var(--green-light);color:var(--green);">10</div>
+        <div><h2>発見事項と次回への提言</h2><span class="section-sub">データに基づく推奨アクション</span></div>
+      </div>
+
+      <div class="rec-grid anim d2">
+        
+        <div class="rec-card">
+          <div class="rec-title">YouTube経由の集客を強化する</div>
+          <div class="rec-body">推定CVR 15.1%は全チャネル最強。セッション数はIGの1/6しかないため伸びしろが大きい。アフィリエイターにYouTubeレビュー動画の制作を依頼するなど、動画経由の流入拡大を優先。</div>
+        </div>
+        
+        <div class="rec-card">
+          <div class="rec-title">新春セールのIG施策を強化する</div>
+          <div class="rec-body">BFでのIG流入3,341 → 新春581の差がセール間の売上差に直結。新春でもストーリーズ/リールでの直接リンク投稿を増やし、フォロワーのリポストを促す仕掛けが必要。</div>
+        </div>
+        
+        <div class="rec-card">
+          <div class="rec-title">最終日効果を意図的に設計する</div>
+          <div class="rec-body">BF 12/6のCVR 13.0%は通常の3倍。「今日最終日」の告知をアフィリエイター全員に依頼し、土日の20-21時に投稿を集中させることで駆け込み購入を最大化。</div>
+        </div>
+        
+        <div class="rec-card">
+          <div class="rec-title">アフィリエイター依存のリスクを分散する</div>
+          <div class="rec-body">新春は特定2名（Tina + ni5.chan）で注文の51%。boo!のようにBFのみ稼働するパターンもある。常時3-4名が安定稼働する体制と、コードなし（自発的購入）比率の向上が課題。</div>
+        </div>
+        
+        <div class="rec-card" style="grid-column: 1 / -1;">
+          <div class="rec-title">投稿の最適タイミング</div>
+          <div class="rec-body">全注文の22.4%が21-23時に集中、曜日は日曜が最強（18.8%）。セール告知やアフィリエイター投稿は「日曜 or 土曜の20-21時」が最適。22-23時の購入ピークの1-2時間前に投稿して駆け込み購入を最大化する。</div>
+        </div>
+        
+      </div>
+    </section>
+    
+
+  </main>
+</div>
+
+<script>
+  const sections = document.querySelectorAll('.section');
+  const navLinks = document.querySelectorAll('.sidebar-nav a');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(link => link.classList.remove('active'));
+        const id = entry.target.id;
+        const activeLink = document.querySelector('.sidebar-nav a[href="#' + id + '"]');
+        if (activeLink) activeLink.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
