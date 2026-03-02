@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>週次比較レポート 2026/02/22〜02/28 — 比較分析</title>
+<style>
+:root{--font:-apple-system,BlinkMacSystemFont,'Inter','Helvetica Neue',sans-serif;--bg:#f6f7fb;--card:#fff;--text:#1a1d2e;--text-secondary:#6b7085;--text-muted:#9ca0b3;--coral:#ff7a6e;--coral-light:#fff0ee;--coral-mid:#ffe0dc;--blue:#5b8def;--blue-light:#eef3ff;--blue-mid:#d6e4ff;--green:#4ecb8d;--green-light:#eafaf2;--purple:#9b7bf7;--purple-light:#f3efff;--amber:#f5a623;--amber-light:#fff8eb;--teal:#36b5a0;--teal-light:#e8f8f5;--rose:#f472b6;--rose-light:#fdf2f8;--shadow-sm:0 1px 3px rgba(0,0,0,.04),0 1px 2px rgba(0,0,0,.06);--shadow-md:0 4px 16px rgba(0,0,0,.06),0 1px 4px rgba(0,0,0,.04);--radius:16px;--radius-sm:10px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased}
+.dashboard{display:flex;min-height:100vh}
+.sidebar{width:260px;background:var(--card);border-right:1px solid #ecedf2;padding:32px 20px;position:fixed;top:0;left:0;bottom:0;display:flex;flex-direction:column;z-index:10;overflow-y:auto}
+.sidebar-logo{font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px}
+.sidebar-title{font-size:20px;font-weight:800;color:var(--text);line-height:1.3;margin-bottom:32px}
+.sidebar-nav{list-style:none}
+.sidebar-nav li{margin-bottom:4px}
+.sidebar-nav a{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:var(--radius-sm);text-decoration:none;color:var(--text-secondary);font-size:14px;font-weight:500;transition:all .2s}
+.sidebar-nav a:hover{background:var(--bg);color:var(--text)}
+.sidebar-nav a.active{background:var(--blue-light);color:var(--blue);font-weight:600}
+.sidebar-nav .nav-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.sidebar-meta{margin-top:auto;padding-top:20px;border-top:1px solid #ecedf2;font-size:12px;color:var(--text-muted);line-height:1.8}
+.main{margin-left:260px;flex:1;padding:40px 48px 80px;max-width:1200px}
+.page-header{margin-bottom:36px}
+.page-header h1{font-size:28px;font-weight:800;color:var(--text);margin-bottom:6px;letter-spacing:-.02em}
+.page-header p{font-size:14px;color:var(--text-secondary)}
+.period-badges{display:flex;gap:12px;margin-top:16px}
+.period-badge{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border-radius:100px;font-size:13px;font-weight:600}
+.period-badge.prev{background:var(--coral-light);color:var(--coral)}
+.period-badge.curr{background:var(--blue-light);color:var(--blue)}
+.period-badge .dot{width:8px;height:8px;border-radius:50%;background:currentColor}
+.section{margin-bottom:48px}
+.section-header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.section-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.section-header h2{font-size:18px;font-weight:700;color:var(--text);letter-spacing:-.01em}
+.section-header .section-sub{font-size:13px;color:var(--text-muted);font-weight:400}
+.card{background:var(--card);border-radius:var(--radius);padding:28px 32px;box-shadow:var(--shadow-sm);margin-bottom:16px;transition:box-shadow .2s}
+.card:hover{box-shadow:var(--shadow-md)}
+.card h3{font-size:15px;font-weight:700;margin-bottom:16px;color:var(--text);display:flex;align-items:center;gap:8px}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px}
+.kpi-card{background:var(--card);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow-sm);position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s}
+.kpi-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.kpi-card:nth-child(1)::before{background:linear-gradient(90deg,var(--coral),#ffb3ac)}
+.kpi-card:nth-child(2)::before{background:linear-gradient(90deg,var(--blue),#93b5ff)}
+.kpi-card:nth-child(3)::before{background:linear-gradient(90deg,var(--green),#7eddb0)}
+.kpi-card:nth-child(4)::before{background:linear-gradient(90deg,var(--purple),#bfa4ff)}
+.kpi-label{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);margin-bottom:12px}
+.kpi-values{display:flex;flex-direction:column;gap:8px}
+.kpi-row{display:flex;align-items:baseline;justify-content:space-between}
+.kpi-row .sale-label{font-size:11px;font-weight:600;padding:2px 8px;border-radius:4px}
+.kpi-row .sale-label.prev{background:var(--coral-light);color:var(--coral)}
+.kpi-row .sale-label.curr{background:var(--blue-light);color:var(--blue)}
+.kpi-row .value{font-size:20px;font-weight:700;color:var(--text);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.kpi-divider{height:1px;background:#f0f1f5}
+.data-table{width:100%;border-collapse:collapse;font-size:13px}
+.data-table thead th{text-align:left;padding:10px 14px;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);border-bottom:2px solid #ecedf2;white-space:nowrap}
+.data-table thead th.num{text-align:right}
+.data-table tbody td{padding:10px 14px;border-bottom:1px solid #f4f5f8;color:var(--text-secondary)}
+.data-table tbody tr:hover{background:#fafbfd}
+.data-table .num{text-align:right;font-variant-numeric:tabular-nums;font-weight:600;color:var(--text);white-space:nowrap}
+.data-table .label-cell{font-weight:600;color:var(--text);white-space:nowrap}
+.table-prev{color:var(--coral)!important}
+.table-curr{color:var(--blue)!important}
+.insight{padding:14px 18px;border-radius:var(--radius-sm);font-size:13px;line-height:1.6;margin-top:16px;display:flex;gap:10px;align-items:flex-start}
+.insight.coral{background:var(--coral-light);color:#b5453c}
+.insight.blue{background:var(--blue-light);color:#3a5fb5}
+.insight.green{background:var(--green-light);color:#2d8a5f}
+.insight.purple{background:var(--purple-light);color:#6b4fcf}
+.insight.amber{background:var(--amber-light);color:#a16d10}
+.insight.teal{background:var(--teal-light);color:#257a6a}
+.insight.rose{background:var(--rose-light);color:#b14478}
+.insight .insight-icon{font-size:16px;flex-shrink:0;margin-top:1px}
+.bar-chart{margin-top:12px}
+.bar-group{margin-bottom:14px}
+.bar-group-label{font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px}
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.bar-label{width:36px;font-size:11px;font-weight:600;flex-shrink:0}
+.bar-label.prev{color:var(--coral)}
+.bar-label.curr{color:var(--blue)}
+.bar-track{flex:1;height:22px;background:#f0f1f5;border-radius:6px;overflow:hidden;position:relative}
+.bar-fill{height:100%;border-radius:6px;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;font-size:11px;font-weight:700;color:#fff;min-width:40px}
+.bar-fill.prev{background:linear-gradient(90deg,var(--coral),#ff9f96)}
+.bar-fill.curr{background:linear-gradient(90deg,var(--blue),#8db3ff)}
+.bar-value-outside{font-size:11px;font-weight:600;color:var(--text-secondary);width:80px;text-align:right;flex-shrink:0;font-variant-numeric:tabular-nums}
+.funnel-container{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:12px}
+.funnel-col h4{font-size:14px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.funnel-step{position:relative;padding:14px 16px;margin-bottom:4px;border-radius:8px;font-size:13px}
+.funnel-step .funnel-label{font-weight:600;color:var(--text)}
+.funnel-step .funnel-nums{display:flex;justify-content:space-between;align-items:baseline;margin-top:2px}
+.funnel-step .funnel-count{font-size:18px;font-weight:800;font-variant-numeric:tabular-nums}
+.funnel-step .funnel-rate{font-size:13px;font-weight:600}
+.funnel-arrow{text-align:center;color:var(--text-muted);font-size:11px;padding:2px 0}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.summary-card{background:var(--card);border-radius:var(--radius);padding:28px 32px;box-shadow:var(--shadow-md);margin-bottom:20px}
+.summary-card h3{font-size:15px;font-weight:700;margin-bottom:16px;color:var(--text);display:flex;align-items:center;gap:8px}
+.summary-points{list-style:none;display:flex;flex-direction:column;gap:14px}
+.summary-points li{display:flex;gap:12px;align-items:flex-start;font-size:14px;color:var(--text-secondary);line-height:1.65}
+.summary-points .point-num{width:24px;height:24px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;margin-top:1px}
+.summary-points li:nth-child(1) .point-num{background:var(--coral-light);color:var(--coral)}
+.summary-points li:nth-child(2) .point-num{background:var(--blue-light);color:var(--blue)}
+.summary-points li:nth-child(3) .point-num{background:var(--green-light);color:var(--green)}
+.summary-points li:nth-child(4) .point-num{background:var(--purple-light);color:var(--purple)}
+.summary-points li:nth-child(5) .point-num{background:var(--amber-light);color:var(--amber)}
+.summary-points strong{color:var(--text);font-weight:600}
+.rank-list{list-style:none}
+.rank-item{display:grid;grid-template-columns:32px 1fr auto auto;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #f4f5f8;font-size:13px}
+.rank-item:last-child{border-bottom:none}
+.rank-num{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0}
+.rank-num.r1{background:#fff8eb;color:var(--amber)}
+.rank-num.r2{background:#f0f1f5;color:var(--text-muted)}
+.rank-num.r3{background:#fef0e6;color:#d48b4e}
+.rank-num.r4{background:#f7f7f8;color:#bbb}
+.rank-name{font-weight:500;color:var(--text)}
+.rank-orders{font-weight:700;color:var(--text);font-variant-numeric:tabular-nums;text-align:right;min-width:50px}
+.rank-sales{font-weight:600;color:var(--text-secondary);font-variant-numeric:tabular-nums;text-align:right;min-width:90px}
+.rec-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.rec-card{background:var(--card);border-radius:var(--radius);padding:22px 24px;box-shadow:var(--shadow-sm);border-top:3px solid;transition:transform .2s}
+.rec-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.rec-card:nth-child(1){border-color:var(--coral)}
+.rec-card:nth-child(2){border-color:var(--blue)}
+.rec-card:nth-child(3){border-color:var(--green)}
+.rec-card:nth-child(4){border-color:var(--purple)}
+.rec-card .rec-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px}
+.rec-card .rec-body{font-size:13px;color:var(--text-secondary);line-height:1.6}
+.change-positive{color:var(--green)!important}
+.change-negative{color:var(--coral)!important}
+.change-neutral{color:var(--text-muted)!important}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.anim{animation:fadeUp .5s ease-out both}
+.d1{animation-delay:.05s}.d2{animation-delay:.1s}.d3{animation-delay:.15s}.d4{animation-delay:.2s}.d5{animation-delay:.25s}
+@media(max-width:1024px){.sidebar{display:none}.main{margin-left:0;padding:24px}.kpi-grid{grid-template-columns:repeat(2,1fr)}.two-col,.funnel-container,.rec-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="dashboard">
+
+<aside class="sidebar">
+  <div class="sidebar-logo">Analytics</div>
+  <div class="sidebar-title">週次比較<br>レポート</div>
+  <ul class="sidebar-nav">
+    <li><a href="#summary" class="active"><span class="nav-icon" style="background:var(--coral-light);color:var(--coral);">01</span>サマリー</a></li>
+    <li><a href="#daily"><span class="nav-icon" style="background:var(--blue-light);color:var(--blue);">02</span>日別売上</a></li>
+    <li><a href="#products"><span class="nav-icon" style="background:var(--amber-light);color:var(--amber);">03</span>商品分析</a></li>
+    <li><a href="#affiliates"><span class="nav-icon" style="background:var(--rose-light);color:var(--rose);">04</span>アフィリエイト</a></li>
+    <li><a href="#traffic"><span class="nav-icon" style="background:var(--green-light);color:var(--green);">05</span>トラフィック</a></li>
+    <li><a href="#funnel"><span class="nav-icon" style="background:var(--purple-light);color:var(--purple);">06</span>CVRファネル</a></li>
+    <li><a href="#channels"><span class="nav-icon" style="background:var(--teal-light);color:var(--teal);">07</span>チャネル分析</a></li>
+    <li><a href="#insights"><span class="nav-icon" style="background:var(--green-light);color:var(--green);">08</span>総合分析・提言</a></li>
+  </ul>
+  <div class="sidebar-meta">
+    作成日: 2026-03-01<br>
+    先週: 2/15（日）〜 2/21（土）<br>
+    今週: 2/22（日）〜 2/28（土）<br>
+    データ: Shopify + GA4
+  </div>
+</aside>
+
+<main class="main">
+
+<!-- Header -->
+<div class="page-header anim">
+  <h1>週次比較レポート</h1>
+  <p>Shopify注文データ + GA4トラフィックデータに基づく週次比較分析</p>
+  <div class="period-badges">
+    <span class="period-badge prev"><span class="dot"></span>先週 2/15〜2/21</span>
+    <span class="period-badge curr"><span class="dot"></span>今週 2/22〜2/28</span>
+  </div>
+</div>
+
+<!-- 1. Summary -->
+<section id="summary" class="section">
+  <div class="section-header anim d1">
+    <div class="section-icon" style="background:var(--coral-light);color:var(--coral);">01</div>
+    <div><h2>エグゼクティブサマリー</h2><span class="section-sub">主要KPI比較</span></div>
+  </div>
+  <div class="kpi-grid anim d2">
+    <div class="kpi-card">
+      <div class="kpi-label">売上合計</div>
+      <div class="kpi-values">
+        <div class="kpi-row"><span class="sale-label prev">先週</span><span class="value">&yen;215,647</span></div>
+        <div class="kpi-divider"></div>
+        <div class="kpi-row"><span class="sale-label curr">今週</span><span class="value">&yen;223,787</span></div>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">注文数</div>
+      <div class="kpi-values">
+        <div class="kpi-row"><span class="sale-label prev">先週</span><span class="value">36件</span></div>
+        <div class="kpi-divider"></div>
+        <div class="kpi-row"><span class="sale-label curr">今週</span><span class="value">30件</span></div>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">平均注文額 (AOV)</div>
+      <div class="kpi-values">
+        <div class="kpi-row"><span class="sale-label prev">先週</span><span class="value">&yen;5,990</span></div>
+        <div class="kpi-divider"></div>
+        <div class="kpi-row"><span class="sale-label curr">今週</span><span class="value">&yen;7,460</span></div>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">CVR</div>
+      <div class="kpi-values">
+        <div class="kpi-row"><span class="sale-label prev">先週</span><span class="value">3.4%</span></div>
+        <div class="kpi-divider"></div>
+        <div class="kpi-row"><span class="sale-label curr">今週</span><span class="value">3.9%</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="summary-card anim d3">
+    <h3>主要ファインディング</h3>
+    <ul class="summary-points">
+      <li><span class="point-num">1</span><span>売上は前週比 <strong>+3.8%</strong> と微増。注文数は-16.7%だが<strong>AOVが+24.5%上昇</strong>し注文減を相殺。PREMIUM COMPLETE EDITIONへの集中が要因。</span></li>
+      <li><span class="point-num">2</span><span><strong>Organic Socialが-50.8%と半減</strong>（IG経由300→141セッション）。先週のバズ投稿の反動と推定。アフィリエイトも3週連続減（258→145→63）。</span></li>
+      <li><span class="point-num">3</span><span>CVRは3.4%→3.9%に<strong>改善</strong>。カート→購入率も40.4%→50.8%に回復。少ないトラフィックで効率的に売上を獲得できている。</span></li>
+      <li><span class="point-num">4</span><span><strong>新規アフィリエイター3名（kazuki, hanah, MYBOO）</strong>が参入。ibarakiも1件→4件に急伸。世代交代の兆し。</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- 2. Daily Sales -->
+<section id="daily" class="section">
+  <div class="section-header anim">
+    <div class="section-icon" style="background:var(--blue-light);color:var(--blue);">02</div>
+    <div><h2>日別売上推移</h2><span class="section-sub">先週 vs 今週</span></div>
+  </div>
+  <div class="two-col anim d1">
+    <div class="card">
+      <h3><span style="color:var(--coral);">&#9679;</span> 先週 (2/15〜2/21)</h3>
+      <table class="data-table">
+        <thead><tr><th>日付</th><th>曜日</th><th class="num">注文数</th><th class="num">売上</th></tr></thead>
+        <tbody>
+          <tr><td class="label-cell">2/14</td><td>土</td><td class="num table-prev">3件</td><td class="num table-prev">&yen;21,736</td></tr>
+          <tr><td class="label-cell">2/15</td><td>日</td><td class="num table-prev">6件</td><td class="num table-prev">&yen;33,648</td></tr>
+          <tr><td class="label-cell">2/16</td><td>月</td><td class="num table-prev">8件</td><td class="num table-prev">&yen;47,746</td></tr>
+          <tr><td class="label-cell">2/17</td><td>火</td><td class="num table-prev">5件</td><td class="num table-prev">&yen;23,982</td></tr>
+          <tr><td class="label-cell">2/18</td><td>水</td><td class="num table-prev">1件</td><td class="num table-prev">&yen;3,478</td></tr>
+          <tr><td class="label-cell">2/19</td><td>木</td><td class="num table-prev">7件</td><td class="num table-prev">&yen;54,827</td></tr>
+          <tr><td class="label-cell">2/20</td><td>金</td><td class="num table-prev">3件</td><td class="num table-prev">&yen;18,192</td></tr>
+          <tr><td class="label-cell">2/21</td><td>土</td><td class="num table-prev">3件</td><td class="num table-prev">&yen;12,038</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <h3><span style="color:var(--blue);">&#9679;</span> 今週 (2/22〜2/28)</h3>
+      <table class="data-table">
+        <thead><tr><th>日付</th><th>曜日</th><th class="num">注文数</th><th class="num">売上</th></tr></thead>
+        <tbody>
+          <tr><td class="label-cell">2/21</td><td>土</td><td class="num table-curr">2件</td><td class="num table-curr">&yen;18,272</td></tr>
+          <tr><td class="label-cell">2/22</td><td>日</td><td class="num table-curr">2件</td><td class="num table-curr">&yen;21,700</td></tr>
+          <tr><td class="label-cell">2/23</td><td>月</td><td class="num table-curr">9件</td><td class="num table-curr">&yen;65,549</td></tr>
+          <tr><td class="label-cell">2/24</td><td>火</td><td class="num table-curr">4件</td><td class="num table-curr">&yen;20,864</td></tr>
+          <tr><td class="label-cell">2/25</td><td>水</td><td class="num table-curr">3件</td><td class="num table-curr">&yen;27,018</td></tr>
+          <tr><td class="label-cell">2/26</td><td>木</td><td class="num table-curr">3件</td><td class="num table-curr">&yen;21,701</td></tr>
+          <tr><td class="label-cell">2/27</td><td>金</td><td class="num table-curr">5件</td><td class="num table-curr">&yen;36,199</td></tr>
+          <tr><td class="label-cell">2/28</td><td>土</td><td class="num table-curr">2件</td><td class="num table-curr">&yen;12,484</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="insight blue anim d2"><span class="insight-icon">💡</span><span><strong>2/23（月）に9件・¥65,549と突出</strong>。週全体の売上の約29%をこの1日で稼いだ。何らかの投稿やプロモーションがトリガーの可能性。先週も月曜（2/16）が8件で最多だった。</span></div>
+</section>
+
+<!-- 3. Products -->
+<section id="products" class="section">
+  <div class="section-header anim">
+    <div class="section-icon" style="background:var(--amber-light);color:var(--amber);">03</div>
+    <div><h2>商品別売上</h2><span class="section-sub">Shopify注文ベース</span></div>
+  </div>
+  <div class="card anim d1">
+    <h3>商品別 販売数・売上比較</h3>
+    <table class="data-table">
+      <thead><tr><th>商品名</th><th class="num">先週（数量/売上）</th><th class="num">今週（数量/売上）</th><th class="num">変化率</th></tr></thead>
+      <tbody>
+        <tr><td class="label-cell">PREMIUM COMPLETE EDITION</td><td class="num table-prev">13個 / &yen;141,888</td><td class="num table-curr">19個 / &yen;206,719</td><td class="num change-positive">+45.7%</td></tr>
+        <tr><td class="label-cell">日常会話 400の動詞表現</td><td class="num table-prev">14個 / &yen;58,660</td><td class="num table-curr">5個 / &yen;20,950</td><td class="num change-negative">-64.3%</td></tr>
+        <tr><td class="label-cell">ESSENTIAL VERBS 400</td><td class="num table-prev">6個 / &yen;25,600</td><td class="num table-curr">4個 / &yen;17,011</td><td class="num change-negative">-33.6%</td></tr>
+        <tr><td class="label-cell">NativeDose [究極の200表現]</td><td class="num table-prev">4個 / &yen;18,125</td><td class="num table-curr">3個 / &yen;13,470</td><td class="num change-negative">-25.7%</td></tr>
+      </tbody>
+    </table>
+    <div class="insight amber"><span class="insight-icon">💡</span><span><strong>PREMIUM COMPLETE EDITIONが13→19個で+45.7%と大幅増</strong>。今週の売上の92.4%を占める。単品商品（400の動詞表現 -64.3%）からPREMIUMへの購入シフトが進んでおり、AOV上昇を牽引。</span></div>
+  </div>
+</section>
+
+<!-- 4. Affiliates -->
+<section id="affiliates" class="section">
+  <div class="section-header anim">
+    <div class="section-icon" style="background:var(--rose-light);color:var(--rose);">04</div>
+    <div><h2>アフィリエイト分析</h2><span class="section-sub">割引コード別の貢献度</span></div>
+  </div>
+  <div class="card anim d1">
+    <h3>コード別 利用状況比較</h3>
+    <table class="data-table">
+      <thead><tr><th>コード</th><th class="num">先週（件数 / 金額）</th><th class="num">今週（件数 / 金額）</th><th class="num">変化</th></tr></thead>
+      <tbody>
+        <tr><td class="label-cell">SHINO</td><td class="num table-prev">5件 / &yen;22,918</td><td class="num table-curr">5件 / &yen;39,751</td><td class="num change-positive">金額+73%</td></tr>
+        <tr><td class="label-cell">ibaraki</td><td class="num table-prev">1件 / &yen;9,006</td><td class="num table-curr">4件 / &yen;34,483</td><td class="num change-positive">+300%</td></tr>
+        <tr><td class="label-cell">coco</td><td class="num table-prev">8件 / &yen;44,886</td><td class="num table-curr">3件 / &yen;21,622</td><td class="num change-negative">-63%</td></tr>
+        <tr><td class="label-cell">youka1109</td><td class="num table-prev">2件 / &yen;13,060</td><td class="num table-curr">2件 / &yen;18,223</td><td class="num change-neutral">安定</td></tr>
+        <tr><td class="label-cell">kazuki</td><td class="num table-prev">—</td><td class="num table-curr">2件 / &yen;18,012</td><td class="num change-positive">NEW</td></tr>
+        <tr><td class="label-cell">mayu</td><td class="num table-prev">1件 / &yen;3,478</td><td class="num table-curr">2件 / &yen;6,956</td><td class="num change-positive">+100%</td></tr>
+        <tr><td class="label-cell">kei</td><td class="num table-prev">2件 / &yen;12,484</td><td class="num table-curr">1件 / &yen;3,727</td><td class="num change-negative">-50%</td></tr>
+        <tr><td class="label-cell">Tina</td><td class="num table-prev">2件 / &yen;18,012</td><td class="num table-curr">1件 / &yen;3,478</td><td class="num change-negative">-50%</td></tr>
+        <tr><td class="label-cell">ni5.chan</td><td class="num table-prev">1件 / &yen;3,478</td><td class="num table-curr">1件 / &yen;9,006</td><td class="num change-neutral">安定</td></tr>
+        <tr><td class="label-cell">hanah</td><td class="num table-prev">—</td><td class="num table-curr">1件 / &yen;9,006</td><td class="num change-positive">NEW</td></tr>
+        <tr><td class="label-cell">MYBOO</td><td class="num table-prev">—</td><td class="num table-curr">1件 / &yen;3,553</td><td class="num change-positive">NEW</td></tr>
+        <tr><td class="label-cell">hiisama</td><td class="num table-prev">2件 / &yen;12,484</td><td class="num table-curr">—</td><td class="num change-negative">-100%</td></tr>
+      </tbody>
+    </table>
+    <div class="insight rose"><span class="insight-icon">📊</span><span><strong>ibarakiが1件→4件に急伸</strong>（金額¥34,483で今週No.1）。cocoは8件→3件に失速。<strong>新規3名（kazuki, hanah, MYBOO）が参入</strong>し世代交代が進行中。アフィリエイト依存度は66.7%→<strong>76.7%</strong>にさらに上昇。</span></div>
+  </div>
+</section>
+
+<!-- 5. Traffic -->
+<section id="traffic" class="section">
+  <div class="section-header anim">
+    <div class="section-icon" style="background:var(--green-light);color:var(--green);">05</div>
+    <div><h2>トラフィック分析</h2><span class="section-sub">GA4 Data API</span></div>
+  </div>
+  <div class="card anim d1">
+    <h3>トラフィック概要</h3>
+    <table class="data-table">
+      <thead><tr><th>指標</th><th class="num">先週</th><th class="num">今週</th><th class="num">変化率</th></tr></thead>
+      <tbody>
+        <tr><td class="label-cell">セッション数</td><td class="num table-prev">1,066</td><td class="num table-curr">762</td><td class="num change-negative">-28.5%</td></tr>
+        <tr><td class="label-cell">ユーザー数</td><td class="num table-prev">975</td><td class="num table-curr">675</td><td class="num change-negative">-30.8%</td></tr>
+        <tr><td class="label-cell">新規ユーザー</td><td class="num table-prev">900</td><td class="num table-curr">613</td><td class="num change-negative">-31.9%</td></tr>
+        <tr><td class="label-cell">CVR（注文/セッション）</td><td class="num table-prev">3.4%</td><td class="num table-curr">3.9%</td><td class="num change-positive">+16.5%</td></tr>
+        <tr><td class="label-cell">カート追加率</td><td class="num table-prev">8.3%</td><td class="num table-curr">7.7%</td><td class="num change-negative">-7.2%</td></tr>
+      </tbody>
+    </table>
+    <div class="insight green"><span class="insight-icon">💡</span><span>セッション数は<strong>-28.5%と大幅減</strong>だがCVRが3.4%→3.9%に改善し売上は+3.8%で維持。<strong>「量より質」の週</strong>。来ている人の購買意欲は高まっている。</span></div>
+  </div>
+
+  <div class="card anim d2">
+    <h3>デバイス別セッション</h3>
+    <table class="data-table">
+      <thead><tr><th>デバイス</th><th class="num">先週</th><th class="num">今週</th><th class="num">変化率</th><th class="num">構成比（今週）</th></tr></thead>
+      <tbody>
+        <tr><td class="label-cell">mobile</td><td class="num table-prev">929</td><td class="num table-curr">616</td><td class="num change-negative">-33.7%</td><td class="num">80.8%</td></tr>
+        <tr><td class="label-cell">desktop</td><td class="num table-prev">106</td><td class="num table-curr">131</td><td class="num change-positive">+23.6%</td><td class="num">17.2%</td></tr>
+        <tr><td class="label-cell">tablet</td><td class="num table-prev">28</td><td class="num table-curr">16</td><td class="num change-negative">-42.9%</td><td class="num">2.1%</td></tr>
+      </tbody>
+    </table>
+    <div class="insight green"><span class="insight-icon">💡</span><span><strong>desktopだけ+23.6%増加</strong>。モバイル中心のSNS流入が減った一方、検索・ダイレクト経由のデスクトップ流入が増加。デスクトップユーザーのCVRが高い傾向があり、今週のCVR改善に寄与。</span></div>
+  </div>
+</section>
+
+<!-- 6. Funnel -->
+<section id="funnel" class="section">
+  <div class="section-header anim">
+    <div class="section-icon" style="background:var(--purple-light);color:var(--purple);">06</div>
+    <div><h2>CVR・ファネル比較</h2><span class="section-sub">コンバージョンフロー</span></div>
+  </div>
+  <div class="card anim d1">
+    <h3>コンバージョンファネル</h3>
+    <div class="funnel-container">
+      <div class="funnel-col">
+        <h4><span style="color:var(--coral);">&#9679;</span> 先週</h4>
+        <div class="funnel-step" style="background:var(--coral-light);"><div class="funnel-label">セッション</div><div class="funnel-nums"><span class="funnel-count" style="color:var(--coral);">1,066</span><span class="funnel-rate" style="color:var(--coral);">100%</span></div></div>
+        <div class="funnel-arrow">&#8595; 8.3%</div>
+        <div class="funnel-step" style="background:var(--coral-light);"><div class="funnel-label">カート追加</div><div class="funnel-nums"><span class="funnel-count" style="color:var(--coral);">89</span><span class="funnel-rate" style="color:var(--coral);">8.3%</span></div></div>
+        <div class="funnel-arrow">&#8595; 40.4%</div>
+        <div class="funnel-step" style="background:var(--coral-mid);"><div class="funnel-label">購入完了</div><div class="funnel-nums"><span class="funnel-count" style="color:var(--coral);">36</span><span class="funnel-rate" style="color:var(--coral);">3.4%</span></div></div>
+      </div>
+      <div class="funnel-col">
+        <h4><span style="color:var(--blue);">&#9679;</span> 今週</h4>
+        <div class="funnel-step" style="background:var(--blue-light);"><div class="funnel-label">セッション</div><div class="funnel-nums"><span class="funnel-count" style="color:var(--blue);">762</span><span class="funnel-rate" style="color:var(--blue);">100%</span></div></div>
+        <div class="funnel-arrow">&#8595; 7.7%</div>
+        <div class="funnel-step" style="background:var(--blue-light);"><div class="funnel-label">カート追加</div><div class="funnel-nums"><span class="funnel-count" style="color:var(--blue);">59</span><span class="funnel-rate" style="color:var(--blue);">7.7%</span></div></div>
+        <div class="funnel-arrow">&#8595; 50.8%</div>
+        <div class="funnel-step" style="background:var(--blue-mid);"><div class="funnel-label">購入完了</div><div class="funnel-nums"><span class="funnel-count" style="color:var(--blue);">30</span><span class="funnel-rate" style="color:var(--blue);">3.9%</span></div></div>
+      </div>
+    </div>
+    <div class="insight purple" style="margin-top:20px;"><span class="insight-icon">📈</span><span><strong>カート→購入率が40.4%→50.8%に大幅改善</strong>（前々週の61.9%→41.7%悪化からの回復傾向）。カートに入れた人の半数以上が購入に至っており、チェックアウト体験は改善方向。</span></div>
+  </div>
+</section>
+
+<!-- 7. Channels -->
+<section id="channels" class="section">
+  <div class="section-header anim">
+    <div class="section-icon" style="background:var(--teal-light);color:var(--teal);">07</div>
+    <div><h2>チャネル別セッション</h2><span class="section-sub">GA4チャネルグループ</span></div>
+  </div>
+  <div class="card anim d1">
+    <h3>チャネル別セッション比較</h3>
+    <div class="bar-chart">
+      <div class="bar-group"><div class="bar-group-label">Organic Social</div><div class="bar-row"><span class="bar-label prev">先週</span><div class="bar-track"><div class="bar-fill prev" style="width:100%">325</div></div><span class="bar-value-outside">30.5%</span></div><div class="bar-row"><span class="bar-label curr">今週</span><div class="bar-track"><div class="bar-fill curr" style="width:49%">160</div></div><span class="bar-value-outside">21.0%</span></div></div>
+      <div class="bar-group"><div class="bar-group-label">Direct</div><div class="bar-row"><span class="bar-label prev">先週</span><div class="bar-track"><div class="bar-fill prev" style="width:83%">270</div></div><span class="bar-value-outside">25.3%</span></div><div class="bar-row"><span class="bar-label curr">今週</span><div class="bar-track"><div class="bar-fill curr" style="width:81%">262</div></div><span class="bar-value-outside">34.4%</span></div></div>
+      <div class="bar-group"><div class="bar-group-label">Organic Search</div><div class="bar-row"><span class="bar-label prev">先週</span><div class="bar-track"><div class="bar-fill prev" style="width:64%">209</div></div><span class="bar-value-outside">19.6%</span></div><div class="bar-row"><span class="bar-label curr">今週</span><div class="bar-track"><div class="bar-fill curr" style="width:51%">167</div></div><span class="bar-value-outside">21.9%</span></div></div>
+      <div class="bar-group"><div class="bar-group-label">Affiliates</div><div class="bar-row"><span class="bar-label prev">先週</span><div class="bar-track"><div class="bar-fill prev" style="width:45%">145</div></div><span class="bar-value-outside">13.6%</span></div><div class="bar-row"><span class="bar-label curr">今週</span><div class="bar-track"><div class="bar-fill curr" style="width:19%">63</div></div><span class="bar-value-outside">8.3%</span></div></div>
+      <div class="bar-group"><div class="bar-group-label">Organic Video</div><div class="bar-row"><span class="bar-label prev">先週</span><div class="bar-track"><div class="bar-fill prev" style="width:22%">70</div></div><span class="bar-value-outside">6.6%</span></div><div class="bar-row"><span class="bar-label curr">今週</span><div class="bar-track"><div class="bar-fill curr" style="width:21%">69</div></div><span class="bar-value-outside">9.1%</span></div></div>
+      <div class="bar-group"><div class="bar-group-label">Referral</div><div class="bar-row"><span class="bar-label prev">先週</span><div class="bar-track"><div class="bar-fill prev" style="width:10%">32</div></div><span class="bar-value-outside">3.0%</span></div><div class="bar-row"><span class="bar-label curr">今週</span><div class="bar-track"><div class="bar-fill curr" style="width:9%">30</div></div><span class="bar-value-outside">3.9%</span></div></div>
+    </div>
+    <div class="insight teal"><span class="insight-icon">⚠️</span><span><strong>Organic Socialが325→160で-50.8%と半減</strong>。トラフィック減（-304セッション）のうち165セッション分（54%）がここ。アフィリエイトも3週連続減（258→145→63）。<strong>Directは-3.0%でほぼ横ばい、安定基盤として機能</strong>。</span></div>
+  </div>
+
+  <div class="card anim d2">
+    <h3>参照元トップ10（今週）</h3>
+    <table class="data-table">
+      <thead><tr><th>#</th><th>参照元</th><th>メディア</th><th class="num">セッション</th><th class="num">前週比</th></tr></thead>
+      <tbody>
+        <tr><td class="label-cell">1</td><td>(direct)</td><td>(none)</td><td class="num">262</td><td class="num change-negative">-3.0%</td></tr>
+        <tr><td class="label-cell">2</td><td>google</td><td>organic</td><td class="num">147</td><td class="num change-negative">-25.4%</td></tr>
+        <tr><td class="label-cell">3</td><td>ig</td><td>social</td><td class="num">141</td><td class="num change-negative">-53.0%</td></tr>
+        <tr><td class="label-cell">4</td><td>youtube.com</td><td>referral</td><td class="num">66</td><td class="num change-negative">-2.9%</td></tr>
+        <tr><td class="label-cell">5</td><td>leaddyno</td><td>affiliate</td><td class="num">63</td><td class="num change-negative">-56.6%</td></tr>
+        <tr><td class="label-cell">6</td><td>import-language.com</td><td>referral</td><td class="num">30</td><td class="num change-negative">-6.2%</td></tr>
+        <tr><td class="label-cell">7</td><td>l.instagram.com</td><td>referral</td><td class="num">15</td><td class="num change-positive">+25.0%</td></tr>
+        <tr><td class="label-cell">8</td><td>yahoo</td><td>organic</td><td class="num">15</td><td class="num change-positive">+36.4%</td></tr>
+        <tr><td class="label-cell">9</td><td>(not set)</td><td>(not set)</td><td class="num">8</td><td class="num change-negative">-33.3%</td></tr>
+        <tr><td class="label-cell">10</td><td>bing</td><td>organic</td><td class="num">5</td><td class="num change-positive">NEW</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 8. Insights -->
+<section id="insights" class="section">
+  <div class="section-header anim">
+    <div class="section-icon" style="background:var(--green-light);color:var(--green);">08</div>
+    <div><h2>総合分析と次週への提言</h2><span class="section-sub">データに基づく推奨アクション</span></div>
+  </div>
+  <div class="card anim d1" style="margin-bottom:24px;">
+    <h3>📊 今週の全体像</h3>
+    <p style="font-size:14px;color:var(--text-secondary);line-height:1.7;">今週は売上&yen;223,787（前週比<strong style="color:var(--green);">+3.8%</strong>）と微増。<strong>トラフィックが-28.5%と大幅に落ちたにもかかわらず売上を維持できた</strong>のが最大のポイントです。要因は2つ：PREMIUM COMPLETE EDITIONへの集中（13→19個）でAOVが&yen;5,990→&yen;7,460に上昇したこと、CVRが3.4%→3.9%に改善し少ないセッションから効率よく注文を獲得できたこと。一方で、Organic Social（-50.8%）とアフィリエイト（-56.6%）の減少は3週連続の傾向であり、新規流入の獲得チャネルに課題があります。</p>
+  </div>
+  <div class="rec-grid anim d2">
+    <div class="rec-card">
+      <div class="rec-title">📱 SNS投稿戦略の見直し</div>
+      <div class="rec-body">IG経由が300→141と不安定。投稿の頻度・内容・タイミングをデータで振り返り、安定的に150+セッション/週を維持できるパターンを探る。</div>
+    </div>
+    <div class="rec-card">
+      <div class="rec-title">🚀 ibarakiの成功要因分析</div>
+      <div class="rec-body">1件→4件に急伸、金額&yen;34,483で今週No.1。高単価PREMIUM購入者を連れてきており、アフィリエイト施策のモデルケースにできるか検討。</div>
+    </div>
+    <div class="rec-card">
+      <div class="rec-title">👋 新規アフィリエイターのフォロー</div>
+      <div class="rec-body">kazuki・hanah・MYBOOの3名が参入。初週の成果を確認し、素材提供やフィードバックで定着を促す。世代交代のチャンスを活かす。</div>
+    </div>
+    <div class="rec-card">
+      <div class="rec-title">💎 PREMIUM集中の活用</div>
+      <div class="rec-body">売上の92%がPREMIUMに集中。商品ページやLPでPREMIUMへの導線をさらに強化し、単品商品からのアップセル訴求も検討。</div>
+    </div>
+  </div>
+</section>
+
+</main>
+</div>
+
+<script>
+const sections=document.querySelectorAll('.section');
+const navLinks=document.querySelectorAll('.sidebar-nav a');
+const observer=new IntersectionObserver(entries=>{entries.forEach(entry=>{if(entry.isIntersecting){navLinks.forEach(l=>l.classList.remove('active'));const id=entry.target.id;const a=document.querySelector('.sidebar-nav a[href="#'+id+'"]');if(a)a.classList.add('active');}});},{rootMargin:'-20% 0px -70% 0px'});
+sections.forEach(s=>observer.observe(s));
+</script>
+</body>
+</html>
