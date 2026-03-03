@@ -1,0 +1,1364 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>購入者属性分析ダッシュボード</title>
+    <style>
+        :root {
+            --font: -apple-system, BlinkMacSystemFont, 'Inter', 'Helvetica Neue', sans-serif;
+            --bg: #f6f7fb;
+            --card: #ffffff;
+            --text: #1a1d2e;
+            --text-secondary: #6b7085;
+            --text-muted: #9ca0b3;
+            --coral: #ff7a6e;
+            --coral-light: #fff0ee;
+            --blue: #5b8def;
+            --blue-light: #eef3ff;
+            --green: #4ecb8d;
+            --green-light: #eafaf2;
+            --purple: #9b7bf7;
+            --purple-light: #f3efff;
+            --amber: #f5a623;
+            --amber-light: #fff8eb;
+            --teal: #36b5a0;
+            --teal-light: #e8f8f5;
+            --rose: #f472b6;
+            --rose-light: #fdf2f8;
+            --indigo: #6366f1;
+            --indigo-light: #eef2ff;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.06), 0 1px 4px rgba(0, 0, 0, 0.04);
+            --radius: 16px;
+            --radius-sm: 10px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font);
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .dashboard {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: var(--card);
+            border-right: 1px solid #ecedf2;
+            padding: 32px 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+            overflow-y: auto;
+        }
+
+        .sidebar-logo {
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .sidebar-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text);
+            line-height: 1.3;
+            margin-bottom: 32px;
+        }
+
+        .sidebar-nav {
+            list-style: none;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 4px;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            border-radius: var(--radius-sm);
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .sidebar-nav a:hover {
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .sidebar-nav a.active {
+            background: var(--blue-light);
+            color: var(--blue);
+            font-weight: 600;
+        }
+
+        .sidebar-nav .nav-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+
+        .sidebar-meta {
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 1px solid #ecedf2;
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.8;
+        }
+
+        /* Main */
+        .main {
+            margin-left: 260px;
+            flex: 1;
+            padding: 40px 48px 80px;
+            max-width: 1200px;
+        }
+
+        /* Header */
+        .page-header {
+            margin-bottom: 36px;
+        }
+
+        .page-header h1 {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 6px;
+            letter-spacing: -0.02em;
+        }
+
+        .page-header p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .period-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 600;
+            background: var(--blue-light);
+            color: var(--blue);
+            margin-top: 12px;
+        }
+
+        .period-badge .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        /* Section */
+        .section {
+            margin-bottom: 48px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .section-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .section-header h2 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: -0.01em;
+        }
+
+        .section-header .section-sub {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 28px 32px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 16px;
+            transition: box-shadow 0.2s;
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .card h3 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* KPI Grid */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .kpi-card {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+        }
+
+        .kpi-card:nth-child(1)::before {
+            background: linear-gradient(90deg, var(--coral), #ffb3ac);
+        }
+
+        .kpi-card:nth-child(2)::before {
+            background: linear-gradient(90deg, var(--blue), #93b5ff);
+        }
+
+        .kpi-card:nth-child(3)::before {
+            background: linear-gradient(90deg, var(--green), #7eddb0);
+        }
+
+        .kpi-card:nth-child(4)::before {
+            background: linear-gradient(90deg, var(--purple), #bfa4ff);
+        }
+
+        .kpi-label {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .kpi-value {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--text);
+            letter-spacing: -0.02em;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .kpi-sub {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 6px;
+        }
+
+        /* Tables */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .data-table thead th {
+            text-align: left;
+            padding: 10px 14px;
+            font-weight: 600;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            border-bottom: 2px solid #ecedf2;
+            white-space: nowrap;
+        }
+
+        .data-table thead th.num {
+            text-align: right;
+        }
+
+        .data-table tbody td {
+            padding: 10px 14px;
+            border-bottom: 1px solid #f4f5f8;
+            color: var(--text-secondary);
+        }
+
+        .data-table tbody tr:hover {
+            background: #fafbfd;
+        }
+
+        .data-table .num {
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+            font-weight: 600;
+            color: var(--text);
+            white-space: nowrap;
+        }
+
+        .data-table .label-cell {
+            font-weight: 600;
+            color: var(--text);
+            white-space: nowrap;
+        }
+
+        .data-table .rank {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .rank-1 {
+            background: #fff8eb;
+            color: var(--amber);
+        }
+
+        .rank-2 {
+            background: #f0f1f5;
+            color: var(--text-muted);
+        }
+
+        .rank-3 {
+            background: #fef0e6;
+            color: #d48b4e;
+        }
+
+        .rank-n {
+            background: #f7f7f8;
+            color: #bbb;
+        }
+
+        /* Bar charts */
+        .bar-chart {
+            margin-top: 12px;
+        }
+
+        .bar-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .bar-label {
+            width: 120px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text);
+            flex-shrink: 0;
+            text-align: right;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .bar-track {
+            flex: 1;
+            height: 28px;
+            background: #f0f1f5;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 10px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #fff;
+            min-width: 48px;
+            transition: width 0.6s ease;
+        }
+
+        .bar-fill.coral {
+            background: linear-gradient(90deg, var(--coral), #ff9f96);
+        }
+
+        .bar-fill.blue {
+            background: linear-gradient(90deg, var(--blue), #8db3ff);
+        }
+
+        .bar-fill.green {
+            background: linear-gradient(90deg, var(--green), #7eddb0);
+        }
+
+        .bar-fill.purple {
+            background: linear-gradient(90deg, var(--purple), #bfa4ff);
+        }
+
+        .bar-fill.amber {
+            background: linear-gradient(90deg, var(--amber), #ffc96b);
+        }
+
+        .bar-fill.teal {
+            background: linear-gradient(90deg, var(--teal), #6fd4c2);
+        }
+
+        .bar-fill.rose {
+            background: linear-gradient(90deg, var(--rose), #f9a8d4);
+        }
+
+        .bar-fill.indigo {
+            background: linear-gradient(90deg, var(--indigo), #a5b4fc);
+        }
+
+        .bar-value {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            width: 80px;
+            text-align: right;
+            flex-shrink: 0;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Gender donut placeholder */
+        .gender-chart {
+            display: flex;
+            gap: 32px;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 0;
+        }
+
+        .donut-wrapper {
+            position: relative;
+            width: 180px;
+            height: 180px;
+        }
+
+        .donut-wrapper svg {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+
+        .donut-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .donut-center .donut-total {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .donut-center .donut-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .gender-legend {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .legend-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+
+        .legend-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .legend-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .legend-detail {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Insight */
+        .insight {
+            padding: 14px 18px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            line-height: 1.6;
+            margin-top: 16px;
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+
+        .insight.blue {
+            background: var(--blue-light);
+            color: #3a5fb5;
+        }
+
+        .insight.green {
+            background: var(--green-light);
+            color: #2d8a5f;
+        }
+
+        .insight.amber {
+            background: var(--amber-light);
+            color: #a16d10;
+        }
+
+        .insight .insight-icon {
+            font-size: 16px;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        /* Two Column */
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        /* No data */
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .no-data-icon {
+            font-size: 40px;
+            margin-bottom: 12px;
+        }
+
+        /* Cross table */
+        .cross-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .cross-table th {
+            padding: 10px 14px;
+            font-weight: 600;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            border-bottom: 2px solid #ecedf2;
+        }
+
+        .cross-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid #f4f5f8;
+            text-align: center;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .cross-table .cell-bar {
+            display: inline-block;
+            height: 22px;
+            border-radius: 4px;
+            min-width: 4px;
+            vertical-align: middle;
+        }
+
+        .cross-table .cell-val {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text);
+            margin-left: 6px;
+            vertical-align: middle;
+        }
+
+        /* Animations */
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .anim {
+            animation: fadeUp 0.5s ease-out both;
+        }
+
+        .d1 {
+            animation-delay: .05s
+        }
+
+        .d2 {
+            animation-delay: .1s
+        }
+
+        .d3 {
+            animation-delay: .15s
+        }
+
+        .d4 {
+            animation-delay: .2s
+        }
+
+        .d5 {
+            animation-delay: .25s
+        }
+
+        .d6 {
+            animation-delay: .3s
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                display: none;
+            }
+
+            .main {
+                margin-left: 0;
+                padding: 24px;
+            }
+
+            .kpi-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .two-col {
+                grid-template-columns: 1fr;
+            }
+
+            .bar-label {
+                width: 80px;
+                font-size: 12px;
+            }
+
+            .gender-chart {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard">
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">Analytics</div>
+            <div class="sidebar-title">購入者属性<br>分析レポート</div>
+            <ul class="sidebar-nav">
+                <li><a href="#summary" class="active"><span class="nav-icon"
+                            style="background:var(--coral-light);color:var(--coral);">01</span>サマリー</a></li>
+                <li><a href="#loyalty"><span class="nav-icon"
+                            style="background:var(--teal-light);color:var(--teal);">02</span>顧客ロイヤリティ</a></li>
+                {% if has_gender %}
+                <li><a href="#gender"><span class="nav-icon"
+                            style="background:var(--rose-light);color:var(--rose);">03</span>性別分布</a></li>
+                {% endif %}
+                {% if has_age %}
+                <li><a href="#age"><span class="nav-icon"
+                            style="background:var(--purple-light);color:var(--purple);">04</span>年齢層分布</a></li>
+                {% endif %}
+                {% if has_gender and has_age %}
+                <li><a href="#cross"><span class="nav-icon"
+                            style="background:var(--indigo-light);color:var(--indigo);">05</span>性別×年齢</a></li>
+                {% endif %}
+                <li><a href="#country"><span class="nav-icon"
+                            style="background:var(--blue-light);color:var(--blue);">06</span>国別分析</a></li>
+                {% if top_provinces %}
+                <li><a href="#province"><span class="nav-icon"
+                            style="background:var(--green-light);color:var(--green);">07</span>都道府県別</a></li>
+                {% endif %}
+                <li><a href="#city"><span class="nav-icon"
+                            style="background:var(--amber-light);color:var(--amber);">08</span>都市別分析</a></li>
+            </ul>
+            <div class="sidebar-meta">
+                作成日: {{ generated_date }}<br>
+                対象期間: {{ data_period }}<br>
+                データ: Shopify + GA4
+            </div>
+        </aside>
+
+        <!-- Main -->
+        <main class="main">
+
+            <!-- Header -->
+            <div class="page-header anim">
+                <h1>購入者属性分析ダッシュボード</h1>
+                <p>Shopify顧客データ + GA4デモグラフィクスに基づく購入者プロファイル</p>
+                <span class="period-badge"><span class="dot"></span>{{ data_period }}</span>
+            </div>
+
+            {# ===== 1. SUMMARY ===== #}
+            <section id="summary" class="section">
+                <div class="section-header anim d1">
+                    <div class="section-icon" style="background:var(--coral-light);color:var(--coral);">01</div>
+                    <div>
+                        <h2>サマリー</h2><span class="section-sub">主要KPI</span>
+                    </div>
+                </div>
+
+                <div class="kpi-grid anim d2">
+                    <div class="kpi-card">
+                        <div class="kpi-label">総顧客数</div>
+                        <div class="kpi-value">{{ total_customers|fmt_num }}</div>
+                        <div class="kpi-sub">人</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">総注文数</div>
+                        <div class="kpi-value">{{ total_orders|fmt_num }}</div>
+                        <div class="kpi-sub">件</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">総売上</div>
+                        <div class="kpi-value">&yen;{{ total_revenue|fmt_yen }}</div>
+                        <div class="kpi-sub">AOV: &yen;{{ avg_order_value|fmt_yen }}</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">リピート率</div>
+                        <div class="kpi-value">{{ repeat_rate|fmt_pct }}</div>
+                        <div class="kpi-sub">2回以上購入者</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">対象国数</div>
+                        <div class="kpi-value">{{ total_countries }}</div>
+                        <div class="kpi-sub">カ国</div>
+                    </div>
+                </div>
+            </section>
+
+            {# ===== 2. LOYALTY ===== #}
+            <section id="loyalty" class="section">
+                <div class="section-header anim d3">
+                    <div class="section-icon" style="background:var(--teal-light);color:var(--teal);">02</div>
+                    <div>
+                        <h2>顧客ロイヤリティ</h2><span class="section-sub">購入頻度・LTV</span>
+                    </div>
+                </div>
+
+                <div class="two-col anim d4">
+                    <div class="card">
+                        <h3>購入頻度分布（回数）</h3>
+                        <div class="bar-chart">
+                            {% for label, count in freq_dist.items() %}
+                            {% set pct = count / total_customers if total_customers else 0 %}
+                            <div class="bar-item">
+                                <div class="bar-label">{{ label }}</div>
+                                <div class="bar-track">
+                                    <div class="bar-fill teal" style="width: {{ pct * 100 }}%;">{{ pct|fmt_pct }}</div>
+                                </div>
+                                <div class="bar-value">{{ count|fmt_num }}人</div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3>LTV分布（累計購入額）</h3>
+                        <div class="bar-chart">
+                            {% for label, count in ltv_dist.items() %}
+                            {% set pct = count / total_customers if total_customers else 0 %}
+                            <div class="bar-item">
+                                <div class="bar-label">{{ label }}</div>
+                                <div class="bar-track">
+                                    <div class="bar-fill blue" style="width: {{ pct * 100 }}%;">{{ pct|fmt_pct }}</div>
+                                </div>
+                                <div class="bar-value">{{ count|fmt_num }}人</div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {# ===== 2. GENDER ===== #}
+            {% if has_gender %}
+            <section id="gender" class="section">
+                <div class="section-header anim">
+                    <div class="section-icon" style="background:var(--rose-light);color:var(--rose);">03</div>
+                    <div>
+                        <h2>性別分布</h2><span class="section-sub">GA4 デモグラフィクス — {{ '購入者' if ga4_demo.gender_mode ==
+                            'transactions' else '訪問者' }}の性別比率</span>
+                    </div>
+                </div>
+
+                {% if ga4_demo.gender_mode == 'users' %}
+                <div class="insight amber anim d1" style="margin-bottom: 24px;">
+                    <span class="insight-icon">⚠️</span>
+                    <div>
+                        <strong>購入データ不足:</strong> 購入者の属性データが十分に取得できなかったため、<strong>サイト訪問者</strong>のデータを表示しています。
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="card anim d1">
+                    <h3>性別ごとの購入データ</h3>
+                    <div class="gender-chart">
+                        {# SVG Donut #}
+                        <div class="donut-wrapper">
+                            <svg viewBox="0 0 100 100">
+                                {% set ns = namespace(offset=0) %}
+                                {% set total_val = gender_data | map(attribute='transactions' if ga4_demo.gender_mode ==
+                                'transactions' else 'users') | sum %}
+                                {% set colors = ['var(--rose)', 'var(--blue)', 'var(--purple)', 'var(--amber)'] %}
+                                {% for g in gender_data %}
+                                {% set pct = g.main_pct * 100 %}
+                                <circle cx="50" cy="50" r="40" fill="none" stroke="{{ colors[loop.index0 % 4] }}"
+                                    stroke-width="16" stroke-dasharray="{{ pct * 2.512 }} {{ (100 - pct) * 2.512 }}"
+                                    stroke-dashoffset="{{ -ns.offset * 2.512 }}" opacity="0.85" />
+                                {% set ns.offset = ns.offset + pct %}
+                                {% endfor %}
+                            </svg>
+                            <div class="donut-center">
+                                <div class="donut-total">{{ total_val|fmt_num }}</div>
+                                <div class="donut-label">{{ '購入数' if ga4_demo.gender_mode == 'transactions' else 'ユーザー数'
+                                    }}</div>
+                            </div>
+                        </div>
+                        <div class="gender-legend">
+                            {% set g_colors_hex = ['#f472b6', '#5b8def', '#9b7bf7', '#f5a623'] %}
+                            {% for g in gender_data %}
+                            <div class="legend-item">
+                                <div class="legend-dot" style="background:{{ g_colors_hex[loop.index0 % 4] }};"></div>
+                                <div class="legend-info">
+                                    <span class="legend-name">{{ g.label }}</span>
+                                    <span class="legend-detail">
+                                        {% if ga4_demo.gender_mode == 'transactions' %}
+                                        {{ g.transactions|fmt_num }}件 ({{ g.tx_pct|fmt_pct }}) / &yen;{{
+                                        g.revenue|fmt_yen }}
+                                        {% else %}
+                                        {{ g.users|fmt_num }}人 ({{ g.user_pct|fmt_pct }})
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <table class="data-table" style="margin-top:16px;">
+                        <thead>
+                            <tr>
+                                <th>性別</th>
+                                <th class="num">{{ '購入数' if ga4_demo.gender_mode == 'transactions' else 'ユーザー数' }}</th>
+                                <th class="num">構成比</th>
+                                <th class="num">{{ 'ユーザー数' if ga4_demo.gender_mode == 'transactions' else '購入数' }}</th>
+                                <th class="num">売上</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for g in gender_data %}
+                            <tr>
+                                <td class="label-cell">{{ g.label }}</td>
+                                <td class="num">{{ (g.transactions if ga4_demo.gender_mode == 'transactions' else
+                                    g.users)|fmt_num }}</td>
+                                <td class="num">{{ g.main_pct|fmt_pct }}</td>
+                                <td class="num">{{ (g.users if ga4_demo.gender_mode == 'transactions' else
+                                    g.transactions)|fmt_num }}</td>
+                                <td class="num">&yen;{{ g.revenue|fmt_yen }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            {% endif %}
+
+            {# ===== 3. AGE ===== #}
+            {% if has_age %}
+            <section id="age" class="section">
+                <div class="section-header anim">
+                    <div class="section-icon" style="background:var(--purple-light);color:var(--purple);">04</div>
+                    <div>
+                        <h2>年齢層分布</h2><span class="section-sub">GA4 デモグラフィクス — {{ '購入者' if ga4_demo.age_mode ==
+                            'transactions' else '訪問者' }}の年齢層傾向</span>
+                    </div>
+                </div>
+
+                {% if ga4_demo.age_mode == 'users' %}
+                <div class="insight amber anim d1" style="margin-bottom: 24px;">
+                    <span class="insight-icon">⚠️</span>
+                    <div>
+                        <strong>購入データ不足:</strong> 購入者の属性データが十分に取得できなかったため、<strong>サイト訪問者</strong>のデータを表示しています。
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="card anim d1">
+                    <h3>年齢層別 {{ '購入数' if ga4_demo.age_mode == 'transactions' else 'ユーザー数' }}</h3>
+                    {% set max_val = age_data | map(attribute='transactions' if ga4_demo.age_mode == 'transactions' else
+                    'users') | max %}
+                    <div class="bar-chart">
+                        {% set bar_colors = ['coral', 'blue', 'purple', 'green', 'amber', 'teal'] %}
+                        {% for a in age_data %}
+                        <div class="bar-item">
+                            <span class="bar-label">{{ a.label }}歳</span>
+                            <div class="bar-track">
+                                <div class="bar-fill {{ bar_colors[loop.index0 % 6] }}"
+                                    style="width:{{ (a.transactions if ga4_demo.age_mode == 'transactions' else a.users) / max_val * 100 if max_val else 0 }}%">
+                                    {{ (a.transactions if ga4_demo.age_mode == 'transactions' else a.users)|fmt_num }}
+                                </div>
+                            </div>
+                            <span class="bar-value">{{ a.main_pct|fmt_pct }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <table class="data-table" style="margin-top:24px;">
+                        <thead>
+                            <tr>
+                                <th>年齢層</th>
+                                <th class="num">{{ '購入数' if ga4_demo.age_mode == 'transactions' else 'ユーザー数' }}</th>
+                                <th class="num">構成比</th>
+                                <th class="num">{{ 'ユーザー数' if ga4_demo.age_mode == 'transactions' else '購入数' }}</th>
+                                <th class="num">売上</th>
+                                <th class="num">売上構成比</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for a in age_data %}
+                            <tr>
+                                <td class="label-cell">{{ a.label }}歳</td>
+                                <td class="num">{{ (a.transactions if ga4_demo.age_mode == 'transactions' else
+                                    a.users)|fmt_num }}</td>
+                                <td class="num">{{ a.main_pct|fmt_pct }}</td>
+                                <td class="num">{{ (a.users if ga4_demo.age_mode == 'transactions' else
+                                    a.transactions)|fmt_num }}</td>
+                                <td class="num">&yen;{{ a.revenue|fmt_yen }}</td>
+                                <td class="num">{{ a.rev_pct|fmt_pct }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            {% endif %}
+
+            {# ===== 4. GENDER × AGE CROSS ===== #}
+            {% if has_gender and has_age and cross_data %}
+            <section id="cross" class="section">
+                <div class="section-header anim">
+                    <div class="section-icon" style="background:var(--indigo-light);color:var(--indigo);">05</div>
+                    <div>
+                        <h2>性別 × 年齢層クロス分析</h2><span class="section-sub">GA4 デモグラフィクス — 詳細セグメント</span>
+                    </div>
+                </div>
+
+                <div class="card anim d1">
+                    <h3>性別×年齢 購入数</h3>
+                    {% set max_cross_tx = cross_data | map(attribute='transactions') | max %}
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>性別</th>
+                                <th>年齢層</th>
+                                <th class="num">購入数</th>
+                                <th class="num">ユーザー数</th>
+                                <th class="num">売上</th>
+                                <th>分布</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for c in cross_data %}
+                            <tr>
+                                <td class="label-cell">{{ c.gender }}</td>
+                                <td>{{ c.age }}歳</td>
+                                <td class="num">{{ c.transactions|fmt_num }}</td>
+                                <td class="num">{{ c.users|fmt_num }}</td>
+                                <td class="num">&yen;{{ c.revenue|fmt_yen }}</td>
+                                <td style="width:200px;">
+                                    <div
+                                        style="width:100%;height:18px;background:#f0f1f5;border-radius:4px;overflow:hidden;">
+                                        <div
+                                            style="width:{{ c.transactions / max_cross_tx * 100 if max_cross_tx else 0 }}%;height:100%;border-radius:4px;background:{% if c.gender == '女性' %}var(--rose){% else %}var(--blue){% endif %};opacity:0.7;">
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            {% endif %}
+
+            {# ===== 5. COUNTRY ===== #}
+            <section id="country" class="section">
+                <div class="section-header anim">
+                    <div class="section-icon" style="background:var(--blue-light);color:var(--blue);">06</div>
+                    <div>
+                        <h2>国別分析</h2><span class="section-sub">Shopify注文データ — 購入者の国・地域</span>
+                    </div>
+                </div>
+
+                {% if top_countries %}
+                <div class="card anim d1">
+                    <h3>国別 注文数（Shopify）</h3>
+                    <div class="bar-chart">
+                        {% set country_colors = ['coral', 'blue', 'green', 'purple', 'amber', 'teal', 'rose', 'indigo']
+                        %}
+                        {% for c in top_countries %}
+                        <div class="bar-item">
+                            <span class="bar-label">{{ c.name }}</span>
+                            <div class="bar-track">
+                                <div class="bar-fill {{ country_colors[loop.index0 % 8] }}"
+                                    style="width:{{ c.width }}%">
+                                    {{ c.orders }}件
+                                </div>
+                            </div>
+                            <span class="bar-value">{{ c.pct|fmt_pct }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="card anim d2">
+                    <h3>国別 注文詳細</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>国</th>
+                                <th class="num">顧客数</th>
+                                <th class="num">注文数</th>
+                                <th class="num">売上</th>
+                                <th class="num">LTV</th>
+                                <th class="num">リピート率</th>
+                                <th class="num">構成比</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for c in top_countries %}
+                            <tr>
+                                <td><span
+                                        class="rank {% if loop.index == 1 %}rank-1{% elif loop.index == 2 %}rank-2{% elif loop.index == 3 %}rank-3{% else %}rank-n{% endif %}">{{
+                                        loop.index }}</span></td>
+                                <td class="label-cell">{{ c.name }}</td>
+                                <td class="num">{{ c.customers|fmt_num }}</td>
+                                <td class="num">{{ c.orders|fmt_num }}</td>
+                                <td class="num">&yen;{{ c.revenue|fmt_yen }}</td>
+                                <td class="num">&yen;{{ c.ltv|fmt_yen }}</td>
+                                <td class="num">{{ c.repeat_rate|fmt_pct }}</td>
+                                <td class="num">{{ c.pct|fmt_pct }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="card anim d1">
+                    <div class="no-data">
+                        <div class="no-data-icon">🌍</div>
+                        <p>国別データが見つかりません</p>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if ga4_countries %}
+                <div class="card anim d3">
+                    <h3>国別 トラフィック・購入（GA4）</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>国</th>
+                                <th class="num">購入数</th>
+                                <th class="num">ユーザー数</th>
+                                <th class="num">売上</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for c in ga4_countries %}
+                            <tr>
+                                <td><span
+                                        class="rank {% if loop.index == 1 %}rank-1{% elif loop.index == 2 %}rank-2{% elif loop.index == 3 %}rank-3{% else %}rank-n{% endif %}">{{
+                                        loop.index }}</span></td>
+                                <td class="label-cell">{{ c.name }}</td>
+                                <td class="num">{{ c.transactions|fmt_num }}件</td>
+                                <td class="num">{{ c.users|fmt_num }}</td>
+                                <td class="num">&yen;{{ c.revenue|fmt_yen }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endif %}
+            </section>
+
+            {# ===== 6. PROVINCE ===== #}
+            {% if top_provinces %}
+            <section id="province" class="section">
+                <div class="section-header anim">
+                    <div class="section-icon" style="background:var(--green-light);color:var(--green);">07</div>
+                    <div>
+                        <h2>都道府県別分析</h2><span class="section-sub">Shopify注文データ — 日本国内の地域分布</span>
+                    </div>
+                </div>
+
+                <div class="card anim d1">
+                    <h3>都道府県別 注文数</h3>
+                    <div class="bar-chart">
+                        {% for p in top_provinces %}
+                        <div class="bar-item">
+                            <span class="bar-label">{{ p.name }}</span>
+                            <div class="bar-track">
+                                <div class="bar-fill green" style="width:{{ p.width }}%">
+                                    {{ p.orders }}件
+                                </div>
+                            </div>
+                            <span class="bar-value">{{ p.pct|fmt_pct }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="card anim d2">
+                    <h3>都道府県別 詳細</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>都道府県</th>
+                                <th class="num">顧客数</th>
+                                <th class="num">注文数</th>
+                                <th class="num">売上</th>
+                                <th class="num">LTV</th>
+                                <th class="num">リピート率</th>
+                                <th class="num">構成比</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for p in top_provinces %}
+                            <tr>
+                                <td><span
+                                        class="rank {% if loop.index == 1 %}rank-1{% elif loop.index == 2 %}rank-2{% elif loop.index == 3 %}rank-3{% else %}rank-n{% endif %}">{{
+                                        loop.index }}</span></td>
+                                <td class="label-cell">{{ p.name }}</td>
+                                <td class="num">{{ p.customers|fmt_num }}</td>
+                                <td class="num">{{ p.orders|fmt_num }}</td>
+                                <td class="num">&yen;{{ p.revenue|fmt_yen }}</td>
+                                <td class="num">&yen;{{ p.ltv|fmt_yen }}</td>
+                                <td class="num">{{ p.repeat_rate|fmt_pct }}</td>
+                                <td class="num">{{ p.pct|fmt_pct }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            {% endif %}
+
+            {# ===== 7. CITY ===== #}
+            <section id="city" class="section">
+                <div class="section-header anim">
+                    <div class="section-icon" style="background:var(--amber-light);color:var(--amber);">08</div>
+                    <div>
+                        <h2>都市別分析</h2><span class="section-sub">Shopify注文データ — 注文の多い都市</span>
+                    </div>
+                </div>
+
+                {% if top_cities %}
+                <div class="card anim d1">
+                    <h3>都市別 注文数（Shopify）</h3>
+                    <div class="bar-chart">
+                        {% for c in top_cities %}
+                        <div class="bar-item">
+                            <span class="bar-label" title="{{ c.name }} ({{ c.country }})">{{ c.name }}</span>
+                            <div class="bar-track">
+                                <div class="bar-fill amber" style="width:{{ c.width }}%">
+                                    {{ c.orders }}件
+                                </div>
+                            </div>
+                            <span class="bar-value">{{ c.pct|fmt_pct }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="card anim d2">
+                    <h3>都市別 詳細</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>都市</th>
+                                <th>国</th>
+                                <th class="num">顧客数</th>
+                                <th class="num">注文数</th>
+                                <th class="num">売上</th>
+                                <th class="num">LTV</th>
+                                <th class="num">リピート率</th>
+                                <th class="num">構成比</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for c in top_cities %}
+                            <tr>
+                                <td><span
+                                        class="rank {% if loop.index == 1 %}rank-1{% elif loop.index == 2 %}rank-2{% elif loop.index == 3 %}rank-3{% else %}rank-n{% endif %}">{{
+                                        loop.index }}</span></td>
+                                <td class="label-cell">{{ c.name }}</td>
+                                <td>{{ c.country }}</td>
+                                <td class="num">{{ c.customers|fmt_num }}</td>
+                                <td class="num">{{ c.orders|fmt_num }}</td>
+                                <td class="num">&yen;{{ c.revenue|fmt_yen }}</td>
+                                <td class="num">&yen;{{ c.ltv|fmt_yen }}</td>
+                                <td class="num">{{ c.repeat_rate|fmt_pct }}</td>
+                                <td class="num">{{ c.pct|fmt_pct }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="card anim d1">
+                    <div class="no-data">
+                        <div class="no-data-icon">🏙️</div>
+                        <p>都市別データが見つかりません</p>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if ga4_cities %}
+                <div class="card anim d3">
+                    <h3>都市別 トラフィック・購入（GA4）</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>都市</th>
+                                <th class="num">購入数</th>
+                                <th class="num">ユーザー数</th>
+                                <th class="num">売上</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for c in ga4_cities %}
+                            <tr>
+                                <td><span
+                                        class="rank {% if loop.index == 1 %}rank-1{% elif loop.index == 2 %}rank-2{% elif loop.index == 3 %}rank-3{% else %}rank-n{% endif %}">{{
+                                        loop.index }}</span></td>
+                                <td class="label-cell">{{ c.name }}</td>
+                                <td class="num">{{ c.transactions|fmt_num }}件</td>
+                                <td class="num">{{ c.users|fmt_num }}</td>
+                                <td class="num">&yen;{{ c.revenue|fmt_yen }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endif %}
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        // Sidebar active link tracking
+        document.addEventListener('DOMContentLoaded', function () {
+            const links = document.querySelectorAll('.sidebar-nav a');
+            const sections = document.querySelectorAll('.section');
+
+            function updateActive() {
+                let current = '';
+                sections.forEach(section => {
+                    const top = section.offsetTop - 120;
+                    if (window.scrollY >= top) current = section.id;
+                });
+                links.forEach(link => {
+                    link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+                });
+            }
+
+            window.addEventListener('scroll', updateActive);
+            updateActive();
+        });
+    </script>
+</body>
+
+</html>
