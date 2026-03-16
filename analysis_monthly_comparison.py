@@ -589,8 +589,8 @@ def main():
     print("[4/4] レポート生成")
     report = generate_report(this_sales, last_sales, this_ga4, last_ga4)
 
-    os.makedirs("output", exist_ok=True)
-    report_path = "output/monthly_report_202602.md"
+    os.makedirs("output/monthly", exist_ok=True)
+    report_path = "output/monthly/monthly_report_202602.md"
     with open(report_path, "w", encoding="utf-8") as f:
         f.write(report)
     print(f"  レポート保存: {report_path}")
@@ -615,7 +615,7 @@ def main():
         "this_month": {"sales": this_sales, "ga4": this_ga4},
         "last_month": {"sales": last_sales, "ga4": last_ga4},
     }
-    json_path = "output/monthly_data_202602.json"
+    json_path = "output/monthly/monthly_data_202602.json"
     with open(json_path, "w", encoding="utf-8") as f:
         json.dump(summary_data, f, ensure_ascii=False, indent=2, default=str)
     print(f"\nデータJSON保存: {json_path}")
