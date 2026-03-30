@@ -22,10 +22,10 @@ from ga4_client import (
 )
 
 # === 期間設定 ===
-THIS_WEEK_START = "2026-03-15"
-THIS_WEEK_END = "2026-03-21"
-LAST_WEEK_START = "2026-03-08"
-LAST_WEEK_END = "2026-03-14"
+THIS_WEEK_START = "2026-03-22"
+THIS_WEEK_END = "2026-03-28"
+LAST_WEEK_START = "2026-03-15"
+LAST_WEEK_END = "2026-03-21"
 
 
 def fetch_orders(start_date, end_date):
@@ -484,7 +484,7 @@ def main():
     report = generate_report(this_sales, last_sales, this_ga4, last_ga4)
 
     os.makedirs("output/weekly", exist_ok=True)
-    report_path = "output/weekly/weekly_report_20260321.md"
+    report_path = "output/weekly/weekly_report_20260328.md"
     with open(report_path, "w", encoding="utf-8") as f:
         f.write(report)
     print(f"  レポート保存: {report_path}")
@@ -509,9 +509,9 @@ def main():
         "this_week": {"sales": this_sales, "ga4": this_ga4},
         "last_week": {"sales": last_sales, "ga4": last_ga4},
     }
-    with open("output/weekly/weekly_data_20260321.json", "w", encoding="utf-8") as f:
+    with open("output/weekly/weekly_data_20260328.json", "w", encoding="utf-8") as f:
         json.dump(summary_data, f, ensure_ascii=False, indent=2, default=str)
-    print(f"\nデータJSON保存: output/weekly/weekly_data_20260321.json")
+    print(f"\nデータJSON保存: output/weekly/weekly_data_20260328.json")
 
 
 if __name__ == "__main__":
