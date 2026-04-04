@@ -1,6 +1,6 @@
 """
 月次比較分析スクリプト
-2月 vs 1月の売上・トラフィック比較レポートを生成
+月次比較分析スクリプト（当月 vs 前月）
 """
 
 import sys
@@ -22,14 +22,14 @@ from ga4_client import (
 )
 
 # === 期間設定 ===
-THIS_MONTH_START = "2026-02-01"
-THIS_MONTH_END = "2026-02-28"
-THIS_MONTH_LABEL = "2月"
-LAST_MONTH_START = "2026-01-01"
-LAST_MONTH_END = "2026-01-31"
-LAST_MONTH_LABEL = "1月"
-THIS_MONTH_DAYS = 28
-LAST_MONTH_DAYS = 31
+THIS_MONTH_START = "2026-03-01"
+THIS_MONTH_END = "2026-03-31"
+THIS_MONTH_LABEL = "3月"
+LAST_MONTH_START = "2026-02-01"
+LAST_MONTH_END = "2026-02-28"
+LAST_MONTH_LABEL = "2月"
+THIS_MONTH_DAYS = 31
+LAST_MONTH_DAYS = 28
 
 
 def fetch_orders(start_date, end_date):
@@ -285,10 +285,10 @@ def generate_report(this_sales, last_sales, this_ga4, last_ga4):
     """Markdownレポートを生成"""
 
     lines = []
-    lines.append("# 月次レポート：2月 vs 1月")
+    lines.append(f"# 月次レポート：{THIS_MONTH_LABEL} vs {LAST_MONTH_LABEL}")
     lines.append("")
-    lines.append(f"- **当月（2月）**: {THIS_MONTH_START}（日）〜 {THIS_MONTH_END}（土）　{THIS_MONTH_DAYS}日間")
-    lines.append(f"- **前月（1月）**: {LAST_MONTH_START}（木）〜 {LAST_MONTH_END}（土）　{LAST_MONTH_DAYS}日間")
+    lines.append(f"- **当月（{THIS_MONTH_LABEL}）**: {THIS_MONTH_START} 〜 {THIS_MONTH_END}　{THIS_MONTH_DAYS}日間")
+    lines.append(f"- **前月（{LAST_MONTH_LABEL}）**: {LAST_MONTH_START} 〜 {LAST_MONTH_END}　{LAST_MONTH_DAYS}日間")
     lines.append(f"- **レポート生成日**: {datetime.now().strftime('%Y-%m-%d')}")
     lines.append("")
     lines.append("> **注記**: GA4のeコマーストラッキングでtransactions/revenueが取得できないため、CVRはShopify注文数 ÷ GA4セッション数で算出しています。日別データにタイムゾーン差（UTC/JST）による若干のズレが含まれます。")
@@ -311,7 +311,7 @@ def generate_report(this_sales, last_sales, this_ga4, last_ga4):
     daily_orders_last = last_sales["order_count"] / LAST_MONTH_DAYS
     daily_orders_this = this_sales["order_count"] / THIS_MONTH_DAYS
 
-    lines.append("| 指標 | 1月 | 2月 | 変化率 |")
+    lines.append(f"| 指標 | {LAST_MONTH_LABEL} | {THIS_MONTH_LABEL} | 変化率 |")
     lines.append("|------|------|------|--------|")
     lines.append(f"| **売上合計** | **{fmt_yen(last_sales['total_sales'])}** | **{fmt_yen(this_sales['total_sales'])}** | **{fmt_pct(sales_change)}** |")
     lines.append(f"| 注文数 | {last_sales['order_count']}件 | {this_sales['order_count']}件 | {fmt_pct(order_change)} |")
@@ -335,8 +335,8 @@ def generate_report(this_sales, last_sales, this_ga4, last_ga4):
     lines.append("## 2. 日別売上推移")
     lines.append("")
 
-    # 1月の日別
-    lines.append(f"### 1月（{LAST_MONTH_START} 〜 {LAST_MONTH_END}）")
+    # 前月の日別
+    lines.append(f"### {LAST_MONTH_LABEL}（{LAST_MONTH_START} 〜 {LAST_MONTH_END}）")
     lines.append("| 日付 | 曜日 | 注文数 | 売上 |")
     lines.append("|------|------|--------|------|")
 
@@ -348,8 +348,8 @@ def generate_report(this_sales, last_sales, this_ga4, last_ga4):
         lines.append(f"| {dt.month}/{dt.day} | {dow} | {d['orders']}件 | {fmt_yen(d['sales'])} |")
     lines.append("")
 
-    # 2月の日別
-    lines.append(f"### 2月（{THIS_MONTH_START} 〜 {THIS_MONTH_END}）")
+    # 当月の日別
+    lines.append(f"### {THIS_MONTH_LABEL}（{THIS_MONTH_START} 〜 {THIS_MONTH_END}）")
     lines.append("| 日付 | 曜日 | 注文数 | 売上 |")
     lines.append("|------|------|--------|------|")
     for date_str in sorted(this_sales["daily_sales"].keys()):
@@ -376,7 +376,7 @@ def generate_report(this_sales, last_sales, this_ga4, last_ga4):
         product_list.append((product, last_p, this_p))
     product_list.sort(key=lambda x: x[2]["sales"] + x[1]["sales"], reverse=True)
 
-    lines.append("| 商品名 | 1月（数量/売上） | 2月（数量/売上） | 売上変化率 |")
+    lines.append(f"| 商品名 | {LAST_MONTH_LABEL}（数量/売上） | {THIS_MONTH_LABEL}（数量/売上） | 売上変化率 |")
     lines.append("|--------|------------------|------------------|-----------|")
     for product, last_p, this_p in product_list:
         change = pct_change(this_p["sales"], last_p["sales"])
@@ -395,7 +395,7 @@ def generate_report(this_sales, last_sales, this_ga4, last_ga4):
     all_codes = set(list(this_sales["discount_breakdown"].keys()) +
                     list(last_sales["discount_breakdown"].keys()))
     if all_codes:
-        # 件数降順でソート（2月の件数ベース）
+        # 件数降順でソート（当月の件数ベース）
         code_list = []
         for code in all_codes:
             last_d = last_sales["discount_breakdown"].get(code, {"count": 0, "total": 0})
@@ -403,7 +403,7 @@ def generate_report(this_sales, last_sales, this_ga4, last_ga4):
             code_list.append((code, last_d, this_d))
         code_list.sort(key=lambda x: x[2]["count"] + x[1]["count"], reverse=True)
 
-        lines.append("| コード | 1月（件数/金額） | 2月（件数/金額） | 変化 |")
+        lines.append(f"| コード | {LAST_MONTH_LABEL}（件数/金額） | {THIS_MONTH_LABEL}（件数/金額） | 変化 |")
         lines.append("|--------|------------------|------------------|------|")
         for code, last_d, this_d in code_list:
             if last_d["count"] == 0:
@@ -430,7 +430,7 @@ def generate_report(this_sales, last_sales, this_ga4, last_ga4):
         last_dep = last_affiliate_count / last_sales["order_count"] * 100 if last_sales["order_count"] > 0 else 0
         this_dep = this_affiliate_count / this_sales["order_count"] * 100 if this_sales["order_count"] > 0 else 0
         lines.append("")
-        lines.append(f"- アフィリエイトコード利用率: 1月 {last_affiliate_count}件/{last_sales['order_count']}件（{last_dep:.1f}%）→ 2月 {this_affiliate_count}件/{this_sales['order_count']}件（**{this_dep:.1f}%**）")
+        lines.append(f"- アフィリエイトコード利用率: {LAST_MONTH_LABEL} {last_affiliate_count}件/{last_sales['order_count']}件（{last_dep:.1f}%）→ {THIS_MONTH_LABEL} {this_affiliate_count}件/{this_sales['order_count']}件（**{this_dep:.1f}%**）")
     else:
         lines.append("ディスカウントコードの利用なし")
     lines.append("")
@@ -450,7 +450,7 @@ def generate_report(this_sales, last_sales, this_ga4, last_ga4):
             daily_sess_last = last_ga4["total_sessions"] / LAST_MONTH_DAYS
             daily_sess_this = this_ga4["total_sessions"] / THIS_MONTH_DAYS
 
-            lines.append("| 指標 | 1月 | 2月 | 変化率 |")
+            lines.append(f"| 指標 | {LAST_MONTH_LABEL} | {THIS_MONTH_LABEL} | 変化率 |")
             lines.append("|------|------|------|--------|")
             lines.append(f"| セッション数 | {last_ga4['total_sessions']:,} | {this_ga4['total_sessions']:,} | {fmt_pct(sess_change)} |")
             lines.append(f"| 日割りセッション | {daily_sess_last:.0f}/日 | {daily_sess_this:.0f}/日 | {fmt_pct(pct_change(daily_sess_this, daily_sess_last))} |")
@@ -472,7 +472,7 @@ def generate_report(this_sales, last_sales, this_ga4, last_ga4):
         if "total_add_to_carts" in this_ga4 and "total_add_to_carts" in last_ga4:
             lines.append("### CVRファネル")
             lines.append("")
-            lines.append("| ステップ | 1月 | 2月 | 変化率 |")
+            lines.append(f"| ステップ | {LAST_MONTH_LABEL} | {THIS_MONTH_LABEL} | 変化率 |")
             lines.append("|----------|------|------|--------|")
             lines.append(f"| セッション | {last_ga4['total_sessions']:,} | {this_ga4['total_sessions']:,} | {fmt_pct(pct_change(this_ga4['total_sessions'], last_ga4['total_sessions']))} |")
             lines.append(f"| カート追加 | {last_ga4['total_add_to_carts']:,} | {this_ga4['total_add_to_carts']:,} | {fmt_pct(pct_change(this_ga4['total_add_to_carts'], last_ga4['total_add_to_carts']))} |")
@@ -490,7 +490,7 @@ def generate_report(this_sales, last_sales, this_ga4, last_ga4):
         if "channel_breakdown" in this_ga4 and "channel_breakdown" in last_ga4:
             lines.append("### チャネル別セッション")
             lines.append("")
-            lines.append("| チャネル | 1月 | 2月 | 変化率 | 構成比（2月） |")
+            lines.append(f"| チャネル | {LAST_MONTH_LABEL} | {THIS_MONTH_LABEL} | 変化率 | 構成比（{THIS_MONTH_LABEL}） |")
             lines.append("|----------|------|------|--------|--------------|")
             all_channels = set(list(this_ga4["channel_breakdown"].keys()) +
                                list(last_ga4["channel_breakdown"].keys()))
@@ -508,7 +508,7 @@ def generate_report(this_sales, last_sales, this_ga4, last_ga4):
         if "device_breakdown" in this_ga4 and "device_breakdown" in last_ga4:
             lines.append("### デバイス別セッション")
             lines.append("")
-            lines.append("| デバイス | 1月 | 2月 | 変化率 | 構成比（2月） |")
+            lines.append(f"| デバイス | {LAST_MONTH_LABEL} | {THIS_MONTH_LABEL} | 変化率 | 構成比（{THIS_MONTH_LABEL}） |")
             lines.append("|----------|------|------|--------|--------------|")
             all_devices = set(list(this_ga4["device_breakdown"].keys()) +
                               list(last_ga4["device_breakdown"].keys()))
@@ -529,7 +529,7 @@ def generate_report(this_sales, last_sales, this_ga4, last_ga4):
                     key = f"{src['source']}|{src['medium']}"
                     last_source_map[key] = src
 
-            lines.append("### 参照元トップ10（2月）")
+            lines.append(f"### 参照元トップ10（{THIS_MONTH_LABEL}）")
             lines.append("")
             lines.append("| # | 参照元 | メディア | セッション | 前月比 |")
             lines.append("|---|--------|----------|-----------|--------|")
@@ -559,7 +559,7 @@ def generate_report(this_sales, last_sales, this_ga4, last_ga4):
 
 def main():
     print("=" * 50)
-    print("月次比較分析: 2月 vs 1月")
+    print(f"月次比較分析: {THIS_MONTH_LABEL} vs {LAST_MONTH_LABEL}")
     print("=" * 50)
     print()
 
@@ -573,8 +573,8 @@ def main():
     print("[2/4] 売上KPI計算")
     last_sales = calc_sales_metrics(last_orders, LAST_MONTH_LABEL)
     this_sales = calc_sales_metrics(this_orders, THIS_MONTH_LABEL)
-    print(f"  1月: {last_sales['order_count']}件 / {fmt_yen(last_sales['total_sales'])}")
-    print(f"  2月: {this_sales['order_count']}件 / {fmt_yen(this_sales['total_sales'])}")
+    print(f"  {LAST_MONTH_LABEL}: {last_sales['order_count']}件 / {fmt_yen(last_sales['total_sales'])}")
+    print(f"  {THIS_MONTH_LABEL}: {this_sales['order_count']}件 / {fmt_yen(this_sales['total_sales'])}")
     print()
 
     # 3. GA4データ取得
@@ -590,7 +590,7 @@ def main():
     report = generate_report(this_sales, last_sales, this_ga4, last_ga4)
 
     os.makedirs("output/monthly", exist_ok=True)
-    report_path = "output/monthly/monthly_report_202602.md"
+    report_path = "output/monthly/monthly_report_202603.md"
     with open(report_path, "w", encoding="utf-8") as f:
         f.write(report)
     print(f"  レポート保存: {report_path}")
@@ -615,7 +615,7 @@ def main():
         "this_month": {"sales": this_sales, "ga4": this_ga4},
         "last_month": {"sales": last_sales, "ga4": last_ga4},
     }
-    json_path = "output/monthly/monthly_data_202602.json"
+    json_path = "output/monthly/monthly_data_202603.json"
     with open(json_path, "w", encoding="utf-8") as f:
         json.dump(summary_data, f, ensure_ascii=False, indent=2, default=str)
     print(f"\nデータJSON保存: {json_path}")
